@@ -1,0 +1,900 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ site.title }}</title>
+<meta name="description" content="{{ site.description }}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖥️</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+        colors: {
+          pearc: {
+            orange: '#E8622C',
+            'orange-dark': '#C94F1F',
+            blue: '#4F7DA0',
+            'blue-dark': '#3D6483',
+            navy: '#263543',
+          }
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background-color: #F8FAFC; }
+
+  .brand-bar {
+    background-image: linear-gradient(90deg, #4F7DA0, #E8622C);
+  }
+
+  .clamp-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .clamp-desc:hover,
+  .clamp-desc:focus {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
+  }
+
+  .pill {
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+  .pill-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+  }
+  .pill-scroll::-webkit-scrollbar { height: 6px; }
+  .pill-scroll::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 9999px; }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  .pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+  @keyframes mentorship-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,98,44,0.45); }
+    50% { box-shadow: 0 0 0 6px rgba(232,98,44,0); }
+  }
+  .mentorship-badge { animation: mentorship-pulse 1.8s ease-in-out infinite; }
+
+  @keyframes hash-glow {
+    0% { box-shadow: 0 0 0 0 rgba(79,125,160,0.9); border-color: rgba(79,125,160,0.9); }
+    50% { box-shadow: 0 0 32px 4px rgba(232,98,44,0.45); border-color: rgba(232,98,44,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(79,125,160,0); border-color: rgb(226,232,240); }
+  }
+  .hash-target { animation: hash-glow 2.2s ease-out 1; }
+
+  #toast {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  }
+
+  .tab-underline {
+    transition: transform 0.25s ease;
+  }
+
+  ::selection { background: rgba(232,98,44,0.2); }
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-700 font-sans min-h-screen">
+
+<!-- Brand stripe -->
+<div class="h-1 w-full brand-bar"></div>
+
+<!-- Top informational banner -->
+<div class="w-full bg-white border-b border-slate-200 text-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-center sm:justify-between gap-2">
+    <div class="flex items-center gap-1.5 text-slate-500">
+      <span class="hidden sm:inline">Official conference resources:</span>
+      <a href="https://pearc.acm.org/pearc26/" target="_blank" rel="noopener noreferrer" class="text-pearc-orange hover:text-pearc-orange-dark font-semibold underline decoration-orange-300 underline-offset-2">ACM PEARC26 Conference ↗</a>
+      <span class="text-slate-300">|</span>
+      <a href="https://pearc.acm.org/pearc26/student-program/" target="_blank" rel="noopener noreferrer" class="text-pearc-blue hover:text-pearc-blue-dark font-semibold underline decoration-blue-300 underline-offset-2">Student Program Hub ↗</a>
+    </div>
+    <a href="https://github.com/HackHPC/hpcresources-pearc26" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-slate-600">github.com/HackHPC/hpcresources-pearc26</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div>
+      <span class="text-[11px] font-semibold tracking-[0.25em] text-slate-400 uppercase">2026 · Student Program Companion</span>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+        <span class="text-pearc-orange">PEAR26</span>
+        <span class="text-pearc-navy"> Student Program HPC Resource Directory</span>
+      </h1>
+      <div class="h-[3px] w-28 brand-bar rounded-full mt-1.5 mb-2"></div>
+      <p class="text-sm text-slate-500">
+        Curated by <span class="text-slate-700 font-medium">HackHPC</span> for undergraduate students &amp; hackathon participants — a companion to the official <span class="text-slate-700 font-medium">ACM PEARC26 Student Program</span>.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="border border-pearc-blue/30 bg-blue-50/60 rounded-full px-4 py-2 flex items-center gap-2">
+        <span class="relative flex h-2 w-2">
+          <span class="pulse-dot absolute inline-flex h-full w-full rounded-full bg-pearc-orange"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-pearc-orange"></span>
+        </span>
+        <span class="text-sm text-pearc-blue-dark font-semibold"><span id="resource-count">--</span> Pipelines Live</span>
+      </div>
+
+      <button type="button" id="suggest-resource-btn"
+         class="bg-pearc-orange hover:bg-pearc-orange-dark text-white font-semibold text-sm px-4 py-2.5 rounded-md shadow-sm transition whitespace-nowrap">
+        ➕ Suggest a Resource
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-4 text-sm font-semibold uppercase tracking-wide" role="tablist">
+    <button data-tab="directory" role="tab" aria-selected="true" class="tab-btn relative py-3 text-pearc-navy border-b-2 border-pearc-orange">
+      Resource Directory
+    </button>
+    <span class="text-pearc-orange">|</span>
+    <button data-tab="mentors" role="tab" aria-selected="false" class="tab-btn relative py-3 text-slate-400 hover:text-pearc-blue border-b-2 border-transparent">
+      Connected Mentors
+    </button>
+  </nav>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+  <!-- ============ TAB A: RESOURCE DIRECTORY ============ -->
+  <section id="tab-directory" class="tab-panel">
+
+    <!-- Search -->
+    <div class="relative mb-5">
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.35-5.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+      </svg>
+      <input id="search-input" type="text" placeholder="Search resources by title, category, or description…"
+        class="w-full bg-white border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg pl-11 pr-4 py-3 text-sm text-slate-700 placeholder-slate-400 outline-none transition shadow-sm" />
+    </div>
+
+    <!-- Category pills -->
+    <div id="category-pills" class="pill-scroll flex gap-2 overflow-x-auto pb-4 mb-4 border-b border-slate-200"></div>
+
+    <!-- Result count -->
+    <p id="results-summary" class="text-xs text-slate-400 mb-4"></p>
+
+    <!-- Card grid -->
+    <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+
+    <p id="empty-state" class="hidden text-center text-slate-400 py-16">
+      No resources match your search. Try a different keyword or category.
+    </p>
+  </section>
+
+  <!-- ============ TAB B: CONNECTED MENTORS ============ -->
+  <section id="tab-mentors" class="tab-panel hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Volunteer submission form -->
+      <div class="lg:col-span-1">
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 sticky top-32">
+          <h2 class="text-lg font-bold text-pearc-navy mb-1">Become a Connected Mentor</h2>
+          <p class="text-sm text-slate-500 mb-5">
+            Submitting opens a pre-filled GitHub Issue on our repository. A HackHPC admin will verify your details and add you to the mentor roster.
+          </p>
+
+          <form id="mentor-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-name">Full Name</label>
+              <input id="m-name" required type="text" placeholder="Ada Lovelace"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-email">Email Address</label>
+              <input id="m-email" required type="email" placeholder="ada@example.edu"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-institution">Institution / Affiliation</label>
+              <input id="m-institution" required type="text" placeholder="Oak Ridge National Laboratory"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-linkedin">LinkedIn Profile URL</label>
+              <input id="m-linkedin" required type="url" placeholder="https://linkedin.com/in/ada-lovelace"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+
+            <button type="submit" class="bg-pearc-orange hover:bg-pearc-orange-dark w-full text-white font-semibold text-sm px-4 py-3 rounded-md shadow-sm transition">
+              Submit via GitHub Issue ↗
+            </button>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              This will open <span class="text-slate-500">github.com/HackHPC/hpcresources-pearc26</span> in a new tab with your information pre-filled as a new issue.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Mentor list -->
+      <div class="lg:col-span-2">
+        <div class="flex items-baseline justify-between mb-4">
+          <h2 class="text-lg font-bold text-pearc-navy">Active Registered Mentors</h2>
+          <span id="mentor-count" class="text-xs text-slate-400"></span>
+        </div>
+        <div id="mentor-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <a href="https://github.com/HackHPC/hpcresources-pearc26" target="_blank" rel="noopener noreferrer" aria-label="HackHPC on GitHub"
+        class="w-8 h-8 flex items-center justify-center rounded bg-pearc-orange hover:bg-pearc-orange-dark text-white transition">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.58.1.79-.25.79-.56 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.1 11.1 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.06.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .31.21.67.8.56C20.71 21.39 24 17.09 24 12c0-6.35-5.15-11.5-12-11.5Z"/></svg>
+      </a>
+      <p class="text-xs text-slate-400">© 2026 HackHPC · Open source directory for the ACM PEARC26 Student Program</p>
+    </div>
+    <div class="flex items-center gap-4 text-xs">
+      <a href="https://pearc.acm.org/pearc26/" target="_blank" rel="noopener noreferrer" class="text-pearc-orange font-semibold hover:text-pearc-orange-dark">ACM PEARC26 ↗</a>
+      <a href="https://pearc.acm.org/pearc26/student-program/" target="_blank" rel="noopener noreferrer" class="text-pearc-blue font-semibold hover:text-pearc-blue-dark">Student Program Hub ↗</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Suggest a Resource Modal -->
+<div id="suggest-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="suggest-modal-backdrop" class="absolute inset-0 bg-slate-900/50"></div>
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+    <div class="flex items-start justify-between mb-1">
+      <h2 class="text-lg font-bold text-pearc-navy">Suggest a Resource</h2>
+      <button type="button" id="suggest-modal-close" aria-label="Close" class="text-slate-400 hover:text-pearc-orange text-2xl leading-none">&times;</button>
+    </div>
+    <p class="text-sm text-slate-500 mb-5">
+      Submitting opens a pre-filled GitHub Issue on our repository. A HackHPC admin will review it and add it to the directory.
+    </p>
+
+    <form id="suggest-form" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-title">Resource Title</label>
+        <input id="s-title" required type="text" placeholder="Women in HPC (WHPC)"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-category">Category</label>
+        <input id="s-category" required type="text" list="suggest-category-list" placeholder="e.g. Communities & Mentorship"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+        <datalist id="suggest-category-list"></datalist>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-url">URL</label>
+        <input id="s-url" type="text" placeholder="https://womeninhpc.org"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-description">Description</label>
+        <textarea id="s-description" required rows="3" placeholder="What is this resource, and who is it for?"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-contact">
+          Contact Person <span class="text-slate-400 font-normal normal-case">(optional — enables the mentorship highlight)</span>
+        </label>
+        <input id="s-contact" type="text" placeholder="Jane Doe - jane@example.edu"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+      </div>
+
+      <button type="submit" class="bg-pearc-orange hover:bg-pearc-orange-dark w-full text-white font-semibold text-sm px-4 py-3 rounded-md shadow-sm transition">
+        Submit via GitHub Issue ↗
+      </button>
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        This will open <span class="text-slate-500">github.com/HackHPC/hpcresources-pearc26</span> in a new tab with your information pre-filled as a new issue.
+      </p>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-24 opacity-0 z-50">
+  <div class="bg-white border border-slate-200 rounded-full px-5 py-2.5 text-sm font-medium text-pearc-navy shadow-lg flex items-center gap-2">
+    <span class="text-pearc-orange">✅</span>
+    <span id="toast-message">Share link copied!</span>
+  </div>
+</div>
+
+<!-- Resource data, parsed from _data/PEARC26-HPCResourceList-FullList.csv at Jekyll build time -->
+<script id="resource-data" type="application/json">{{ site.data["PEARC26-HPCResourceList-FullList"] | jsonify | replace: "</", "<\/" }}</script>
+
+<!-- Mentor data, parsed from _data/mentors.csv at Jekyll build time -->
+<script id="mentor-data" type="application/json">{{ site.data["mentors"] | jsonify | replace: "</", "<\/" }}</script>
+
+<script>
+(function () {
+  'use strict';
+
+  const GITHUB_REPO = 'HackHPC/hpcresources-pearc26';
+
+  const state = {
+    resources: [],
+    categories: [],
+    activeCategory: 'All',
+    searchTerm: '',
+    mentors: [],
+  };
+
+  // ---------- Utilities ----------
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function slugify(text) {
+    return String(text || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'resource';
+  }
+
+  function normalizeUrl(url) {
+    if (!url) return '';
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  }
+
+  function extractContactName(contact) {
+    if (!contact) return '';
+    let name = contact.replace(/[<(][^>)]*[>)]/g, '');
+    name = name.replace(/[-–]\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$/i, '');
+    name = name.replace(/\s+/g, ' ').trim();
+    return name || contact.trim();
+  }
+
+  function findMentorByName(name) {
+    const normalized = name.trim().toLowerCase();
+    return state.mentors.find(m => m.name.trim().toLowerCase() === normalized);
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.textContent = message;
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => {
+      toast.classList.add('translate-y-24', 'opacity-0');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 2500);
+  }
+
+  function legacyCopy(text) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.opacity = '0';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); } catch (e) { /* no-op */ }
+    document.body.removeChild(el);
+    return Promise.resolve();
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+    }
+    return legacyCopy(text);
+  }
+
+  // ---------- Sharing ----------
+
+  function buildShareUrl(slug) {
+    return `${window.location.origin}${window.location.pathname}#resource-${slug}`;
+  }
+
+  function closeShareMenus(exceptSlug) {
+    document.querySelectorAll('[data-share-menu]').forEach(menu => {
+      if (menu.getAttribute('data-share-menu') !== exceptSlug) {
+        menu.classList.add('hidden');
+      }
+    });
+  }
+
+  function runShareAction(action, slug, title) {
+    const shareUrl = buildShareUrl(slug);
+
+    switch (action) {
+      case 'copy':
+        copyToClipboard(shareUrl).then(() => showToast('Share link copied!'));
+        break;
+      case 'sms':
+        window.location.href = `sms:?&body=${encodeURIComponent(`${title} ${shareUrl}`)}`;
+        break;
+      case 'email':
+        window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'x':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer');
+        break;
+    }
+  }
+
+  function setupSharing() {
+    document.addEventListener('click', (e) => {
+      const toggleBtn = e.target.closest('[data-share-toggle]');
+      if (toggleBtn) {
+        const slug = toggleBtn.getAttribute('data-share-toggle');
+        const title = toggleBtn.getAttribute('data-share-title') || '';
+        const shareUrl = buildShareUrl(slug);
+
+        // Prefer the native share sheet (Messages, social apps, copy, etc.)
+        // when the browser/OS supports it; fall back to our menu otherwise.
+        if (navigator.share) {
+          navigator.share({ title, url: shareUrl }).catch(() => {});
+          return;
+        }
+
+        const menu = document.querySelector(`[data-share-menu="${slug}"]`);
+        const wasHidden = menu.classList.contains('hidden');
+        closeShareMenus(null);
+        if (wasHidden) menu.classList.remove('hidden');
+        return;
+      }
+
+      const actionBtn = e.target.closest('[data-share-action]');
+      if (actionBtn) {
+        const menu = actionBtn.closest('[data-share-menu]');
+        const slug = menu.getAttribute('data-share-menu');
+        const toggle = document.querySelector(`[data-share-toggle="${slug}"]`);
+        const title = toggle ? toggle.getAttribute('data-share-title') || '' : '';
+        runShareAction(actionBtn.getAttribute('data-share-action'), slug, title);
+        closeShareMenus(null);
+        return;
+      }
+
+      // Click outside any share control closes open menus.
+      closeShareMenus(null);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeShareMenus(null);
+    });
+  }
+
+  // ---------- Resource data ----------
+  // Data is parsed from _data/PEARC26-HPCResourceList-FullList.csv by Jekyll at
+  // build time and embedded as JSON below, so no runtime CSV fetch/parse is needed.
+
+  function loadResources() {
+    try {
+      const raw = document.getElementById('resource-data').textContent;
+      const rows = JSON.parse(raw || '[]');
+
+      state.resources = rows
+        .filter(row => row.Name && row.Name.trim())
+        .map(row => ({
+          title: (row.Name || '').trim(),
+          category: (row.Category || 'Uncategorized').trim() || 'Uncategorized',
+          description: (row.Description || '').trim(),
+          url: normalizeUrl((row.URL || '').trim()),
+          contact: (row['Contact Person'] || '').trim(),
+        }));
+
+      state.categories = Array.from(new Set(state.resources.map(r => r.category))).sort();
+
+      document.getElementById('resource-count').textContent = state.resources.length;
+
+      renderCategoryPills();
+      renderResources();
+      populateSuggestCategoryList();
+      handleHashScroll();
+    } catch (err) {
+      console.error('Failed to load resource data:', err);
+      const grid = document.getElementById('resource-grid');
+      grid.innerHTML = '<p class="col-span-full text-center text-slate-400 py-16">Could not load resource data.</p>';
+    }
+  }
+
+  // ---------- Rendering: Category pills ----------
+
+  function renderCategoryPills() {
+    const container = document.getElementById('category-pills');
+    const cats = ['All', ...state.categories];
+    container.innerHTML = cats.map(cat => {
+      const active = cat === state.activeCategory;
+      const base = 'pill px-4 py-1.5 rounded-full text-xs font-semibold border transition shrink-0';
+      const activeClasses = active
+        ? 'bg-pearc-orange text-white border-transparent'
+        : 'bg-white text-slate-500 border-slate-300 hover:border-pearc-blue hover:text-pearc-blue';
+      return `<button type="button" data-category="${escapeHtml(cat)}" class="${base} ${activeClasses}">${escapeHtml(cat)}</button>`;
+    }).join('');
+
+    container.querySelectorAll('[data-category]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.activeCategory = btn.getAttribute('data-category');
+        renderCategoryPills();
+        renderResources();
+      });
+    });
+  }
+
+  // ---------- Rendering: Resource cards ----------
+
+  function filteredResources() {
+    const term = state.searchTerm.toLowerCase().trim();
+    return state.resources.filter(r => {
+      const matchesCategory = state.activeCategory === 'All' || r.category === state.activeCategory;
+      if (!matchesCategory) return false;
+      if (!term) return true;
+      return (
+        r.title.toLowerCase().includes(term) ||
+        r.category.toLowerCase().includes(term) ||
+        r.description.toLowerCase().includes(term)
+      );
+    });
+  }
+
+  function renderResources() {
+    const grid = document.getElementById('resource-grid');
+    const emptyState = document.getElementById('empty-state');
+    const summary = document.getElementById('results-summary');
+    const list = filteredResources();
+
+    summary.textContent = `Showing ${list.length} of ${state.resources.length} resources`;
+
+    if (list.length === 0) {
+      grid.innerHTML = '';
+      emptyState.classList.remove('hidden');
+      return;
+    }
+    emptyState.classList.add('hidden');
+
+    grid.innerHTML = list.map(cardTemplate).join('');
+  }
+
+  function cardTemplate(resource) {
+    const slug = slugify(resource.title);
+    const hasContact = Boolean(resource.contact);
+    const hasUrl = Boolean(resource.url);
+
+    const borderClasses = hasContact
+      ? 'border-l-4 border-l-pearc-orange border-t border-r border-b border-slate-200'
+      : 'border border-slate-200';
+
+    let contactHtml = '';
+    if (hasContact) {
+      const contactName = extractContactName(resource.contact);
+      const mentor = findMentorByName(contactName);
+      const nameHtml = mentor
+        ? `<a href="#mentor-${mentor.slug}" data-mentor-link="${mentor.slug}" class="text-pearc-blue hover:text-pearc-orange font-medium underline underline-offset-2">${escapeHtml(contactName)}</a>`
+        : `<span class="text-slate-600 font-medium">${escapeHtml(contactName)}</span>`;
+
+      contactHtml = `<div class="mt-3 flex items-center gap-2">
+          <span class="mentorship-badge inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-pearc-orange-dark bg-orange-50 border border-orange-200 rounded-full px-2.5 py-1">
+            ⚡ Mentorship Available
+          </span>
+        </div>
+        <p class="mt-2 text-xs text-slate-500">${nameHtml}</p>`;
+    }
+
+    const launchBtn = hasUrl
+      ? `<a href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer"
+           class="bg-pearc-orange hover:bg-pearc-orange-dark text-white text-xs font-semibold px-3.5 py-2 rounded-md shadow-sm transition whitespace-nowrap">
+           Launch Opportunity ↗
+         </a>`
+      : `<span class="text-xs text-slate-400">No link provided</span>`;
+
+    return `
+      <article id="resource-${slug}" tabindex="-1"
+        class="group relative rounded-xl bg-white shadow-sm p-5 flex flex-col justify-between hover:shadow-md hover:border-pearc-blue/50 transition ${borderClasses}">
+        <div>
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <span class="text-[11px] uppercase tracking-wide font-semibold text-pearc-blue-dark bg-blue-50 border border-blue-200 rounded px-2.5 py-1 shrink-0">
+              ${escapeHtml(resource.category)}
+            </span>
+            <div class="relative shrink-0">
+              <button type="button" data-share-toggle="${slug}" data-share-title="${escapeHtml(resource.title)}" title="Share this resource"
+                class="text-[11px] font-medium text-slate-400 hover:text-pearc-orange transition flex items-center gap-1">
+                🔗 Share
+              </button>
+              <div data-share-menu="${slug}" class="hidden absolute right-0 top-6 z-20 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 text-xs">
+                <button type="button" data-share-action="copy" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">📋 Copy link</button>
+                <button type="button" data-share-action="sms" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">💬 Text message</button>
+                <button type="button" data-share-action="email" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">✉️ Email</button>
+                <div class="my-1 border-t border-slate-100"></div>
+                <button type="button" data-share-action="x" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">𝕏 Share on X</button>
+                <button type="button" data-share-action="linkedin" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">💼 Share on LinkedIn</button>
+                <button type="button" data-share-action="facebook" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">📘 Share on Facebook</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-base font-semibold text-pearc-navy mb-1.5 leading-snug">${escapeHtml(resource.title)}</h3>
+
+          <p tabindex="0" class="clamp-desc text-sm text-slate-500 leading-relaxed outline-none">
+            ${escapeHtml(resource.description) || '<span class="italic text-slate-400">No description provided.</span>'}
+          </p>
+
+          ${contactHtml}
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+          ${launchBtn}
+        </div>
+      </article>
+    `;
+  }
+
+  // ---------- Mentors tab ----------
+  // Data is parsed from _data/mentors.csv by Jekyll at build time and embedded
+  // as JSON below, so no runtime CSV fetch/parse is needed.
+
+  function loadMentors() {
+    try {
+      const raw = document.getElementById('mentor-data').textContent;
+      const rows = JSON.parse(raw || '[]');
+
+      state.mentors = rows
+        .filter(row => row.Name && row.Name.trim())
+        .map(row => {
+          const name = (row.Name || '').trim();
+          return {
+            name,
+            slug: slugify(name),
+            affiliation: (row.Affiliation || '').trim(),
+            linkedin: normalizeUrl((row.LinkedIn || '').trim()),
+            focus: (row.Focus || '').trim(),
+            email: (row.Email || '').trim(),
+          };
+        });
+    } catch (err) {
+      console.error('Failed to load mentor data:', err);
+      state.mentors = [];
+    }
+    renderMentors();
+  }
+
+  function renderMentors() {
+    const grid = document.getElementById('mentor-grid');
+    document.getElementById('mentor-count').textContent = `${state.mentors.length} verified`;
+    grid.innerHTML = state.mentors.map(m => `
+      <div id="mentor-${m.slug}" tabindex="-1" class="rounded-xl border border-slate-200 bg-white shadow-sm p-5 hover:border-pearc-blue/50 hover:shadow-md transition">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <h3 class="text-sm font-semibold text-pearc-navy">${escapeHtml(m.name)}</h3>
+          <span class="text-[10px] uppercase tracking-wide font-bold text-pearc-blue-dark bg-blue-50 border border-blue-200 rounded-full px-2 py-0.5 shrink-0">Verified</span>
+        </div>
+        <p class="text-xs text-slate-500 mb-1">${escapeHtml(m.affiliation)}</p>
+        <p class="text-[11px] text-slate-400 mb-4">${escapeHtml(m.focus)}</p>
+        <div class="flex items-center gap-4">
+          <a href="${escapeHtml(m.linkedin)}" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-orange hover:text-pearc-orange-dark transition">
+            Connect on LinkedIn ↗
+          </a>
+          ${m.email ? `<a href="mailto:${escapeHtml(m.email)}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-blue hover:text-pearc-blue-dark transition">✉️ Email</a>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function buildGithubIssueUrl(title, bodyLines, labels) {
+    const params = new URLSearchParams();
+    params.set('title', title);
+    params.set('body', bodyLines.join('\n'));
+    if (labels) params.set('labels', labels);
+    return `https://github.com/${GITHUB_REPO}/issues/new?${params.toString()}`;
+  }
+
+  function setupMentorForm() {
+    const form = document.getElementById('mentor-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('m-name').value.trim();
+      const email = document.getElementById('m-email').value.trim();
+      const institution = document.getElementById('m-institution').value.trim();
+      const linkedin = document.getElementById('m-linkedin').value.trim();
+
+      const body = [
+        '**New Mentor Submission**',
+        '',
+        `- **Full Name:** ${name}`,
+        `- **Email Address:** ${email}`,
+        `- **Institution / Affiliation:** ${institution}`,
+        `- **LinkedIn Profile:** ${linkedin}`,
+        '',
+        '_Submitted via the PEAR26 Student Program HPC Resource Directory mentor form._',
+      ];
+
+      const issueUrl = buildGithubIssueUrl(`[Mentor Signup] ${name}`, body, 'mentor-signup');
+      window.open(issueUrl, '_blank', 'noopener,noreferrer');
+      form.reset();
+      showToast('Opening GitHub to finish your submission…');
+    });
+  }
+
+  // ---------- Suggest a Resource modal ----------
+
+  function openSuggestModal() {
+    const modal = document.getElementById('suggest-modal');
+    modal.classList.remove('hidden');
+    document.getElementById('s-title').focus();
+  }
+
+  function closeSuggestModal() {
+    document.getElementById('suggest-modal').classList.add('hidden');
+  }
+
+  function populateSuggestCategoryList() {
+    const datalist = document.getElementById('suggest-category-list');
+    datalist.innerHTML = state.categories.map(cat => `<option value="${escapeHtml(cat)}"></option>`).join('');
+  }
+
+  function setupSuggestResourceButton() {
+    document.getElementById('suggest-resource-btn').addEventListener('click', openSuggestModal);
+    document.getElementById('suggest-modal-close').addEventListener('click', closeSuggestModal);
+    document.getElementById('suggest-modal-backdrop').addEventListener('click', closeSuggestModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSuggestModal();
+    });
+
+    const form = document.getElementById('suggest-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('s-title').value.trim();
+      const category = document.getElementById('s-category').value.trim();
+      const url = document.getElementById('s-url').value.trim();
+      const description = document.getElementById('s-description').value.trim();
+      const contact = document.getElementById('s-contact').value.trim();
+
+      const body = [
+        '**New Resource Suggestion**',
+        '',
+        `- **Title:** ${title}`,
+        `- **Category:** ${category}`,
+        `- **URL:** ${url}`,
+        `- **Contact Person (optional):** ${contact}`,
+        '',
+        '**Description**',
+        description,
+        '',
+        '_Submitted via the PEAR26 Student Program HPC Resource Directory._',
+      ];
+
+      const issueUrl = buildGithubIssueUrl(`[Resource Suggestion] ${title}`, body, 'resource-suggestion');
+      window.open(issueUrl, '_blank', 'noopener,noreferrer');
+      form.reset();
+      closeSuggestModal();
+      showToast('Opening GitHub to finish your submission…');
+    });
+  }
+
+  // ---------- Tabs ----------
+
+  function activateTab(target) {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      const isActive = b.getAttribute('data-tab') === target;
+      b.setAttribute('aria-selected', String(isActive));
+      b.classList.toggle('text-pearc-navy', isActive);
+      b.classList.toggle('border-pearc-orange', isActive);
+      b.classList.toggle('text-slate-400', !isActive);
+      b.classList.toggle('border-transparent', !isActive);
+    });
+
+    document.getElementById('tab-directory').classList.toggle('hidden', target !== 'directory');
+    document.getElementById('tab-mentors').classList.toggle('hidden', target !== 'mentors');
+  }
+
+  function setupTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => activateTab(btn.getAttribute('data-tab')));
+    });
+  }
+
+  // ---------- Contact person -> mentor profile links ----------
+
+  function goToMentor(slug) {
+    activateTab('mentors');
+    history.replaceState(null, '', `#mentor-${slug}`);
+    setTimeout(() => {
+      const el = document.getElementById(`mentor-${slug}`);
+      if (el) scrollToAndGlow(el);
+    }, 100);
+  }
+
+  function setupContactLinks() {
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('[data-mentor-link]');
+      if (!link) return;
+      e.preventDefault();
+      goToMentor(link.getAttribute('data-mentor-link'));
+    });
+  }
+
+  // ---------- Search ----------
+
+  function setupSearch() {
+    const input = document.getElementById('search-input');
+    input.addEventListener('input', () => {
+      state.searchTerm = input.value;
+      renderResources();
+    });
+  }
+
+  // ---------- Deep-link hash scroll ----------
+
+  function scrollToAndGlow(el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('hash-target');
+    setTimeout(() => el.classList.remove('hash-target'), 2300);
+  }
+
+  function handleHashScroll() {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    if (hash.startsWith('#resource-')) {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) scrollToAndGlow(el);
+      }, 150);
+    } else if (hash.startsWith('#mentor-')) {
+      activateTab('mentors');
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) scrollToAndGlow(el);
+      }, 150);
+    }
+  }
+
+  // ---------- Init ----------
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupTabs();
+    setupSearch();
+    setupSharing();
+    setupContactLinks();
+    setupMentorForm();
+    setupSuggestResourceButton();
+    loadMentors();
+    loadResources();
+  });
+
+  window.addEventListener('load', handleHashScroll);
+  window.addEventListener('hashchange', handleHashScroll);
+})();
+</script>
+
+</body>
+</html>

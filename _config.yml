@@ -1,0 +1,15 @@
+title: PEAR26 Student Program HPC Resource Directory
+description: >-
+  An open-source, student-focused HPC resource hub built by HackHPC — a
+  companion directory to the ACM PEARC26 Student Program.
+url: ""
+baseurl: ""
+
+# Everything the site needs lives in index.html + _data; keep Jekyll from
+# trying to process anything else in the repo as a page.
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - node_modules
