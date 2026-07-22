@@ -163,6 +163,20 @@ layout: null
   <!-- ============ TAB A: RESOURCE DIRECTORY ============ -->
   <section id="tab-directory" class="tab-panel">
 
+    <!-- Multi-resource selection -->
+    <div class="flex justify-end items-center gap-2 mb-3">
+      <button type="button" id="clear-selected-btn" disabled
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-orange hover:text-pearc-orange-dark text-slate-500 font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-slate-300 disabled:hover:text-slate-500">
+        ✕ Clear All Selected
+      </button>
+      <button type="button" id="share-multiple-btn" disabled
+        class="inline-flex items-center gap-2 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-500 font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-slate-300 disabled:hover:text-slate-500">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share Multiple Resources
+        <span id="share-multiple-count" class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-pearc-orange text-white text-xs font-bold">0</span>
+      </button>
+    </div>
+
     <!-- Search + Major/Category filters -->
     <div class="flex flex-col sm:flex-row gap-3 mb-5">
       <div class="relative flex-1">
@@ -347,6 +361,46 @@ layout: null
   </div>
 </div>
 
+<!-- Share Multiple Resources Modal -->
+<div id="share-multiple-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="share-multiple-modal-backdrop" class="absolute inset-0 bg-slate-900/50"></div>
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+    <div class="flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-100">
+      <div>
+        <h2 class="text-lg font-bold text-pearc-navy">Share Multiple Resources</h2>
+        <p id="share-multiple-modal-count" class="text-xs text-slate-400 mt-0.5">0 resources selected</p>
+      </div>
+      <button type="button" id="share-multiple-modal-close" aria-label="Close" class="text-slate-400 hover:text-pearc-orange text-2xl leading-none shrink-0">&times;</button>
+    </div>
+
+    <div id="share-multiple-items" class="p-6 pt-4 space-y-3 overflow-y-auto flex-1"></div>
+
+    <div class="p-6 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
+      <button type="button" id="share-multiple-pdf"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📄 Download PDF
+      </button>
+      <button type="button" id="share-multiple-csv"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📊 Download CSV
+      </button>
+      <button type="button" id="share-multiple-markdown"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📝 Download Markdown
+      </button>
+      <button type="button" id="share-multiple-copy"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📋 Copy to Clipboard
+      </button>
+      <button type="button" id="share-multiple-share"
+        class="inline-flex items-center gap-1.5 bg-pearc-orange hover:bg-pearc-orange-dark text-white font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition ml-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-24 opacity-0 z-50">
   <div class="bg-white border border-slate-200 rounded-full px-5 py-2.5 text-sm font-medium text-pearc-navy shadow-lg flex items-center gap-2">
@@ -439,6 +493,7 @@ layout: null
     searchTerm: '',
     mentors: [],
     speakers: [],
+    selectedResources: new Set(),
   };
 
   // ---------- Utilities ----------
@@ -592,6 +647,177 @@ layout: null
     });
   }
 
+  // ---------- Multi-resource selection & sharing ----------
+
+  function getSelectedResourcesOrdered() {
+    return state.resources.filter(r => state.selectedResources.has(r.slug));
+  }
+
+  function updateShareMultipleButton() {
+    const btn = document.getElementById('share-multiple-btn');
+    const count = state.selectedResources.size;
+    document.getElementById('share-multiple-count').textContent = String(count);
+    btn.disabled = count === 0;
+    document.getElementById('clear-selected-btn').disabled = count === 0;
+  }
+
+  function clearAllSelected() {
+    if (state.selectedResources.size === 0) return;
+    state.selectedResources.clear();
+    updateShareMultipleButton();
+    renderResources();
+    closeShareMultipleModal();
+  }
+
+  function shareMultipleItemRow(r) {
+    return `
+      <div class="border border-slate-200 rounded-lg p-4 flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <div class="flex flex-wrap gap-1.5 mb-1.5">${r.categories.map(categoryBadge).join('')}</div>
+          <h4 class="text-sm font-semibold text-pearc-navy">${escapeHtml(r.title)}</h4>
+          ${r.url
+            ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer" class="text-xs text-pearc-blue hover:text-pearc-orange break-all">${escapeHtml(r.url)}</a>`
+            : `<span class="text-xs text-slate-400">No link provided</span>`}
+          <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+            ${escapeHtml(r.description) || '<span class="italic text-slate-400">No description provided.</span>'}
+          </p>
+        </div>
+        <button type="button" data-share-multiple-remove="${r.slug}" title="Remove from selection"
+          class="text-slate-300 hover:text-pearc-orange text-lg leading-none shrink-0">&times;</button>
+      </div>`;
+  }
+
+  function renderShareMultipleModal() {
+    const list = getSelectedResourcesOrdered();
+    document.getElementById('share-multiple-items').innerHTML = list.map(shareMultipleItemRow).join('');
+    document.getElementById('share-multiple-modal-count').textContent = `${list.length} resource${list.length === 1 ? '' : 's'} selected`;
+  }
+
+  function openShareMultipleModal() {
+    if (state.selectedResources.size === 0) return;
+    renderShareMultipleModal();
+    document.getElementById('share-multiple-modal').classList.remove('hidden');
+  }
+
+  function closeShareMultipleModal() {
+    document.getElementById('share-multiple-modal').classList.add('hidden');
+  }
+
+  function shareMultiplePlainText(list) {
+    return list.map(r => {
+      const lines = [r.title];
+      if (r.url) lines.push(r.url);
+      lines.push(`Categories: ${r.categories.join(', ')}`);
+      if (r.description) lines.push(r.description);
+      return lines.join('\n');
+    }).join('\n\n');
+  }
+
+  function shareMultipleMarkdown(list) {
+    return list.map(r => {
+      const heading = r.url ? `## [${r.title}](${r.url})` : `## ${r.title}`;
+      const lines = [heading, '', `**Categories:** ${r.categories.join(', ')}`];
+      if (r.description) lines.push('', r.description);
+      return lines.join('\n');
+    }).join('\n\n');
+  }
+
+  function csvEscape(value) {
+    const str = String(value === null || value === undefined ? '' : value);
+    return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+  }
+
+  function shareMultipleCsv(list) {
+    const header = ['Name', 'URL', 'Categories', 'Description'];
+    const rows = list.map(r => [r.title, r.url, r.categories.join('; '), r.description]);
+    return [header, ...rows].map(row => row.map(csvEscape).join(',')).join('\r\n');
+  }
+
+  function downloadFile(filename, content, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadPdf(list) {
+    const win = window.open('', '_blank');
+    if (!win) {
+      showToast('Please allow pop-ups to export as PDF.');
+      return;
+    }
+    const rowsHtml = list.map(r => `
+      <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;margin-bottom:12px;break-inside:avoid;">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#4F7DA0;font-weight:600;margin-bottom:4px;">${escapeHtml(r.categories.join(' · '))}</div>
+        <div style="font-size:15px;font-weight:700;color:#263543;margin-bottom:2px;">${escapeHtml(r.title)}</div>
+        ${r.url ? `<div style="font-size:12px;color:#4F7DA0;margin-bottom:6px;word-break:break-all;">${escapeHtml(r.url)}</div>` : ''}
+        <div style="font-size:13px;color:#475569;line-height:1.5;">${escapeHtml(r.description)}</div>
+      </div>
+    `).join('');
+    win.document.write(`<!DOCTYPE html><html><head><title>PEARC26 HPC Resources</title>
+      <meta charset="UTF-8">
+      <style>body{font-family:Arial,Helvetica,sans-serif;padding:24px;color:#1e293b;} h1{font-size:18px;color:#263543;margin-bottom:16px;}</style>
+      </head><body>
+      <h1>PEARC26 Student Program &mdash; Selected HPC Resources</h1>
+      ${rowsHtml}
+      </body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 300);
+  }
+
+  function setupResourceSelection() {
+    document.addEventListener('change', (e) => {
+      const checkbox = e.target.closest('[data-select-resource]');
+      if (!checkbox) return;
+      const slug = checkbox.getAttribute('data-select-resource');
+      if (checkbox.checked) state.selectedResources.add(slug);
+      else state.selectedResources.delete(slug);
+      updateShareMultipleButton();
+    });
+
+    document.getElementById('share-multiple-btn').addEventListener('click', openShareMultipleModal);
+    document.getElementById('clear-selected-btn').addEventListener('click', clearAllSelected);
+    document.getElementById('share-multiple-modal-close').addEventListener('click', closeShareMultipleModal);
+    document.getElementById('share-multiple-modal-backdrop').addEventListener('click', closeShareMultipleModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeShareMultipleModal();
+    });
+
+    document.getElementById('share-multiple-items').addEventListener('click', (e) => {
+      const removeBtn = e.target.closest('[data-share-multiple-remove]');
+      if (!removeBtn) return;
+      state.selectedResources.delete(removeBtn.getAttribute('data-share-multiple-remove'));
+      updateShareMultipleButton();
+      renderResources();
+      renderShareMultipleModal();
+      if (state.selectedResources.size === 0) closeShareMultipleModal();
+    });
+
+    document.getElementById('share-multiple-pdf').addEventListener('click', () => downloadPdf(getSelectedResourcesOrdered()));
+    document.getElementById('share-multiple-csv').addEventListener('click', () =>
+      downloadFile('pearc26-resources.csv', shareMultipleCsv(getSelectedResourcesOrdered()), 'text/csv;charset=utf-8'));
+    document.getElementById('share-multiple-markdown').addEventListener('click', () =>
+      downloadFile('pearc26-resources.md', shareMultipleMarkdown(getSelectedResourcesOrdered()), 'text/markdown;charset=utf-8'));
+    document.getElementById('share-multiple-copy').addEventListener('click', () => {
+      copyToClipboard(shareMultiplePlainText(getSelectedResourcesOrdered())).then(() => showToast('Copied to clipboard!'));
+    });
+    document.getElementById('share-multiple-share').addEventListener('click', () => {
+      const list = getSelectedResourcesOrdered();
+      const text = shareMultiplePlainText(list);
+      if (navigator.share) {
+        navigator.share({ title: 'PEARC26 HPC Resources', text }).catch(() => {});
+      } else {
+        copyToClipboard(text).then(() => showToast('Copied to clipboard — share it anywhere!'));
+      }
+    });
+  }
+
   // ---------- Resource data ----------
   // Data is parsed from _data/PEARC26-HPCResourceList-FullList.csv by Jekyll at
   // build time and embedded as JSON below, so no runtime CSV fetch/parse is needed.
@@ -607,6 +833,7 @@ layout: null
           const title = (row.Name || '').trim();
           return {
             title,
+            slug: slugify(title),
             categories: (row.Category || '').split(',').map(c => c.trim()).filter(Boolean).length
               ? (row.Category || '').split(',').map(c => c.trim()).filter(Boolean)
               : ['Uncategorized'],
@@ -822,10 +1049,11 @@ layout: null
   }
 
   function cardTemplate(resource) {
-    const slug = slugify(resource.title);
+    const slug = resource.slug;
     const hasContact = Boolean(resource.contact);
     const hasUrl = Boolean(resource.url);
     const isExhibitor = resource.categories.includes(EXHIBITOR_CATEGORY);
+    const isSelected = state.selectedResources.has(slug);
 
     const borderClasses = hasContact
       ? 'border-l-4 border-l-pearc-orange border-t border-r border-b border-slate-200'
@@ -850,9 +1078,9 @@ layout: null
     }
 
     const launchBtn = hasUrl
-      ? `<a href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer"
-           class="bg-pearc-orange hover:bg-pearc-orange-dark text-white text-xs font-semibold px-3.5 py-2 rounded-md shadow-sm transition whitespace-nowrap">
-           Launch Opportunity ↗
+      ? `<a href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(resource.url)}"
+           class="bg-pearc-orange hover:bg-pearc-orange-dark text-white text-xs font-semibold px-3.5 py-2 rounded-md shadow-sm transition truncate min-w-0 max-w-full">
+           ${escapeHtml(resource.url)} ↗
          </a>`
       : `<span class="text-xs text-slate-400">No link provided</span>`;
 
@@ -864,25 +1092,32 @@ layout: null
             <div class="flex flex-wrap gap-1.5">
               ${resource.categories.map(categoryBadge).join('')}
             </div>
-            <div class="relative shrink-0">
-              <button type="button" data-share-toggle="${slug}" data-share-title="${escapeHtml(resource.title)}" title="Share this resource"
-                class="text-[11px] font-medium text-slate-400 hover:text-pearc-orange transition flex items-center gap-1">
-                🔗 Share
-              </button>
-              <div data-share-menu="${slug}" class="hidden absolute right-0 top-6 z-20 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 text-xs">
-                <button type="button" data-share-action="copy" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">📋 Copy link</button>
-                <button type="button" data-share-action="sms" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">💬 Text message</button>
-                <button type="button" data-share-action="email" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">✉️ Email</button>
-                <div class="my-1 border-t border-slate-100"></div>
-                <button type="button" data-share-action="x" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">𝕏 Share on X</button>
-                <button type="button" data-share-action="linkedin" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">💼 Share on LinkedIn</button>
-                <button type="button" data-share-action="facebook" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">📘 Share on Facebook</button>
+            <div class="flex items-center gap-2.5 shrink-0">
+              <label class="flex items-center gap-1 text-[11px] font-medium text-slate-400 hover:text-pearc-blue cursor-pointer select-none" title="Select for sharing">
+                <input type="checkbox" data-select-resource="${slug}" ${isSelected ? 'checked' : ''}
+                  class="rounded border-slate-300 text-pearc-orange focus:ring-pearc-orange/50 w-3.5 h-3.5 cursor-pointer">
+              </label>
+              <div class="relative">
+                <button type="button" data-share-toggle="${slug}" data-share-title="${escapeHtml(resource.title)}" title="Share this resource"
+                  class="text-[11px] font-medium text-slate-400 hover:text-pearc-orange transition flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 shrink-0" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  Share
+                </button>
+                <div data-share-menu="${slug}" class="hidden absolute right-0 top-6 z-20 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 text-xs">
+                  <button type="button" data-share-action="copy" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">📋 Copy link</button>
+                  <button type="button" data-share-action="sms" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">💬 Text message</button>
+                  <button type="button" data-share-action="email" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">✉️ Email</button>
+                  <div class="my-1 border-t border-slate-100"></div>
+                  <button type="button" data-share-action="x" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">𝕏 Share on X</button>
+                  <button type="button" data-share-action="linkedin" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">💼 Share on LinkedIn</button>
+                  <button type="button" data-share-action="facebook" class="w-full text-left px-3 py-2 hover:bg-slate-50 text-slate-600 flex items-center gap-2">📘 Share on Facebook</button>
+                </div>
               </div>
             </div>
           </div>
 
           <h3 class="flex items-center gap-2 text-base font-semibold text-pearc-navy mb-1.5 leading-snug">
-            <img src="${escapeHtml(SITE_BASEURL + '/assets/favicons/resources/' + slug + '.svg')}" alt="" loading="lazy"
+            <img src="${escapeHtml(SITE_BASEURL + '/assets/favicons/resources/' + resource.slug + '.svg')}" alt="" loading="lazy"
               class="w-4 h-4 shrink-0 object-contain rounded-sm" onerror="this.remove()">
             <span>${escapeHtml(resource.title)}</span>
           </h3>
@@ -918,6 +1153,8 @@ layout: null
             name,
             slug: slugify(name),
             affiliation: (row.Affiliation || '').trim(),
+            affiliationUrl: normalizeUrl((row['Affiliation URL'] || '').trim()),
+            roleUrl: normalizeUrl((row['Role URL'] || '').trim()),
             linkedin: normalizeUrl((row.LinkedIn || '').trim()),
             focus: (row.Focus || '').trim(),
             email: (row.Email || '').trim(),
@@ -930,6 +1167,20 @@ layout: null
     renderMentors();
   }
 
+  function affiliationLink(text, url) {
+    return url
+      ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="hover:text-pearc-orange transition">${escapeHtml(text)}</a>`
+      : escapeHtml(text);
+  }
+
+  function mentorAffiliationHtml(m) {
+    const sepIndex = m.affiliation.indexOf(' · ');
+    if (sepIndex === -1) return affiliationLink(m.affiliation, m.affiliationUrl);
+    const orgPart = m.affiliation.slice(0, sepIndex);
+    const rolePart = m.affiliation.slice(sepIndex + 3);
+    return `${affiliationLink(orgPart, m.affiliationUrl)} · ${affiliationLink(rolePart, m.roleUrl)}`;
+  }
+
   function renderMentors() {
     const grid = document.getElementById('mentor-grid');
     document.getElementById('mentor-count').textContent = `${state.mentors.length} verified`;
@@ -939,14 +1190,15 @@ layout: null
           <h3 class="text-sm font-semibold text-pearc-navy">${escapeHtml(m.name)}</h3>
           <span class="text-[10px] uppercase tracking-wide font-bold text-pearc-blue-dark bg-blue-50 border border-blue-200 rounded-full px-2 py-0.5 shrink-0">Verified</span>
         </div>
-        <p class="text-xs text-slate-500 mb-1">${escapeHtml(m.affiliation)}</p>
+        <p class="text-xs text-slate-500 mb-1">${mentorAffiliationHtml(m)}</p>
         <p class="text-[11px] text-slate-400 mb-4">${escapeHtml(m.focus)}</p>
         <div class="flex items-center gap-4">
           <a href="${escapeHtml(m.linkedin)}" target="_blank" rel="noopener noreferrer"
             class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-orange hover:text-pearc-orange-dark transition">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
             Connect on LinkedIn ↗
           </a>
-          ${m.email ? `<a href="mailto:${escapeHtml(m.email)}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-blue hover:text-pearc-blue-dark transition">✉️ Email</a>` : ''}
+          ${m.email ? `<a href="mailto:${escapeHtml(m.email)}?subject=${encodeURIComponent('[PEARC26 Student Program]')}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-blue hover:text-pearc-blue-dark transition">✉️ Email</a>` : ''}
         </div>
       </div>
     `).join('');
@@ -1012,8 +1264,8 @@ layout: null
             <p class="text-xs text-slate-400 mb-4">${affiliationsHtml(speaker.affiliations)}</p>
 
             <div class="flex items-center gap-4 mb-5">
-              ${speaker.linkedin ? `<a href="${escapeHtml(speaker.linkedin)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-orange hover:text-pearc-orange-dark transition">Connect on LinkedIn ↗</a>` : ''}
-              ${speaker.email ? `<a href="mailto:${escapeHtml(speaker.email)}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-blue hover:text-pearc-blue-dark transition">✉️ ${escapeHtml(speaker.email)}</a>` : ''}
+              ${speaker.linkedin ? `<a href="${escapeHtml(speaker.linkedin)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-orange hover:text-pearc-orange-dark transition"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>Connect on LinkedIn ↗</a>` : ''}
+              ${speaker.email ? `<a href="mailto:${escapeHtml(speaker.email)}?subject=${encodeURIComponent('[PEARC26 Student Program]')}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-blue hover:text-pearc-blue-dark transition">✉️ Email</a>` : ''}
             </div>
 
             <div class="bio text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
@@ -1215,6 +1467,7 @@ layout: null
     setupMultiSelects();
     setupSortFilter();
     setupSharing();
+    setupResourceSelection();
     setupContactLinks();
     setupMentorForm();
     setupSuggestResourceButton();

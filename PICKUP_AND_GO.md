@@ -95,14 +95,45 @@ category value unless a new one is genuinely warranted), `Description`
     field (comma-separated) or its `Description` rather than creating a
     duplicate row — this has been the convention for PEARC exhibitors that
     overlap with existing resources (e.g. ACCESS Cyberinfrastructure, US-RSE).
+  - **The category taxonomy has been deliberately consolidated more than
+    once** — several near-duplicate categories were merged away entirely:
+    `Academic Fellowship` → `Fellowships`, `Academic Training` →
+    `Training Programs`, `Academic Career Prep` → `Jobs & Careers`,
+    `Governmental Internships` → `Scholarships & Internships`, and later
+    `Diversity & Inclusion` + `Professional Organizations` → `Communities &
+    Mentorship`. If a category looks like it overlaps with another, that's
+    not an oversight to "fix" unprompted — check whether a merge was
+    already considered and rejected, or ask before merging again (this
+    project's convention is to confirm scope before any taxonomy-wide
+    change, since it reshapes the filter UI for everyone).
+  - **Multi-category tagging follows a "primary function, not passing
+    mention" rule**, confirmed explicitly with the user: only add a second
+    category when it's clearly a core thing the resource *is*, not an
+    activity mentioned once in its description (e.g. a professional org
+    that "offers mentorship" as one of several member benefits doesn't
+    automatically also get `Communities & Mentorship`). One deliberate,
+    confirmed exception: `Cyberinfrastructure Resources` now also includes
+    PEARC exhibitor/vendor entries (AWS, Dell, Globus, PSC, SDSC, etc.)
+    whenever their description says they directly provide computing/
+    storage/network infrastructure — this was a conscious scope call, not
+    scope creep, so don't narrow it back down without asking first.
 
 **`_data/mentors.csv`** — columns: `Name` (required), `Affiliation`,
-`LinkedIn` (should be a real per-person profile URL, not a bare
-`linkedin.com/`), `Focus`, `Email`. The JS matches a resource's
-`Contact Person` name against `mentors.csv`'s `Name` column (case-insensitive,
-trimmed) to auto-link a resource card to that mentor's profile — so if you
-add a mentor, the name in `Contact Person` on the resource CSV must match
-exactly for the link to appear.
+`Affiliation URL` (optional), `Role URL` (optional), `LinkedIn` (should be a
+real per-person profile URL, not a bare `linkedin.com/`), `Focus`, `Email`.
+The JS matches a resource's `Contact Person` name against `mentors.csv`'s
+`Name` column (case-insensitive, trimmed) to auto-link a resource card to
+that mentor's profile — so if you add a mentor, the name in `Contact Person`
+on the resource CSV must match exactly for the link to appear.
+- **`Affiliation` follows an `Org Name · Role/Team` convention** (separated
+  by ` · `, not a plain hyphen). `mentorAffiliationHtml()` in `index.html`
+  splits on the first ` · ` and independently links each half via the shared
+  `affiliationLink()` helper: the org-name portion links to `Affiliation URL`
+  if set, and the role/team portion links to `Role URL` if set (e.g. Suzanna
+  Gardner's "RCAC / Anvil Supercomputer" links to
+  `rcac.purdue.edu/anvil`, separate from her "Purdue University" link).
+  Either or both can be blank, in which case that segment just renders as
+  plain text.
 
 **`_data/speakers.yml`** — a list of mappings with `name`, `title`, `photo`
 (optional path under `/assets/speakers/` — falls back to initials avatar if
@@ -137,12 +168,43 @@ render `<p>` tags).
   to plain `/favicon.ico`, convert non-SVG raster to an SVG wrapper exactly
   like the speaker-affiliation icons). `rel` can be multi-token
   (`rel="shortcut icon"`) — match the whole quoted attribute value, not
-  just up to the first space, or you'll silently miss those. A handful of
-  sites (ACM, HPCWire, SHI, PEARC's acm.org subdomain) block simple
-  `curl` with a WAF/bot-challenge and have no icon; that's expected, not a
-  bug to chase. If new resources are added later without a matching icon
-  file, they'll just render without one — fetch and drop a new
-  `<slug>.svg` into that folder if you want one to appear.
+  just up to the first space, or you'll silently miss those. If new
+  resources are added later without a matching icon file, they'll just
+  render without one — fetch and drop a new `<slug>.svg` into that folder
+  if you want one to appear.
+  - **Reusing icons already vendored in the sibling repo**
+    (`HackHPC/facultyhack-gateways26`, under
+    `_includes/icons/favicons/<domain-slug>.svg`) is fine and faster than
+    re-fetching from scratch — but that repo inlines its SVGs directly into
+    HTML via Jekyll includes, so their root `<svg>` tags have **no
+    `xmlns="http://www.w3.org/2000/svg"` attribute** (optional when
+    inlined, required when loaded standalone via `<img src>`). Copying one
+    over as-is renders as a blank/broken image here with no error — always
+    add the `xmlns` attribute back when reusing one of their vendored SVGs.
+  - **A "placeholder-looking" favicon isn't necessarily wrong.** A couple
+    of small/newer sites' real favicons genuinely are a plain solid-color
+    shape or a single letter on a colored square (no elaborate logo) —
+    before assuming a fetched icon is a broken/generic fallback, fetch the
+    site's own `<link rel="icon">` URL live and compare; if it matches
+    byte-for-byte, that's their real branding, not an error.
+  - **For sites that block simple `curl`** (Akamai/Cloudflare bot
+    challenges — ACM, HPCWire, Mark III Systems, HPE, and others hit this):
+    try the Wayback Machine first
+    (`http://archive.org/wayback/available?url=<domain>`) for either the
+    favicon file directly or the homepage HTML (to find the real
+    `<link rel="icon">` path, then fetch *that* asset, possibly also via
+    Wayback if the live path is also blocked). Some sites also serve brand
+    assets from a separate CDN path that isn't behind the same WAF as the
+    main domain (e.g. ACM's `/binaries/content/gallery/...` AEM path) —
+    worth trying before reaching for Wayback. `curl -sIL`/HEAD requests can
+    behave differently than a real `GET` on these hosts, so don't trust a
+    HEAD-only check as proof a favicon is missing.
+  - **Genuinely icon-less sites** (an empty `data:,` favicon, dead/
+    sinkholed DNS, no Wayback snapshot at all — PEARC's own domain, SC,
+    SHI Public Sector all hit this) get an emoji fallback instead: a tiny
+    SVG containing just a `<text>` element with the emoji glyph, saved at
+    the same computed path. Ask the user which emoji if it's not obvious
+    (don't invent branding for an org that has none).
 - **Three tabs** (`#tab-directory` / `#tab-mentors` / `#tab-speakers`),
   toggled client-side by `activateTab()` — no page reload, no URL change.
   `setupTabs()` wires every `.tab-btn` (matched by its `data-tab` attribute)
@@ -154,18 +216,19 @@ render `<p>` tags).
   - **Search box** — matches title/category/description substrings.
   - **Category filter** — a button that opens a checkbox multi-select panel
     (`data-multiselect-toggle/-panel/-option="category"`), sourced from
-    `state.categories` (derived from the CSV's `Category` column). Selecting
-    multiple checkboxes is OR logic (matches any selected category).
-  - **Major filter** — same checkbox multi-select UI, but sourced from a
-    **hardcoded JS mapping**, `MAJOR_RESOURCE_MAP` (search for it in
-    `index.html`), not from the CSV. It maps ~10 broad student fields of
-    study (e.g. "Data Science, AI, Statistics, and Analytics") to a curated
-    list of resource *names* that must exactly string-match the CSV's
-    `Name` column. **If you rename a resource in the CSV, you must also
-    update its name everywhere it appears in `MAJOR_RESOURCE_MAP`**, or it
-    silently drops out of that major's filter results (no error — it just
-    won't match). Not every resource is mapped to a major; unmapped ones
-    only show up under "All".
+    `state.categories` (derived from the CSV's `Category` column, sorted
+    alphabetically via `localeCompare`). Selecting multiple checkboxes is OR
+    logic (matches any selected category).
+  - **Major filter** — same checkbox multi-select UI (also alphabetized),
+    but sourced from a **hardcoded JS mapping**, `MAJOR_RESOURCE_MAP`
+    (search for it in `index.html`), not from the CSV. It maps ~10 broad
+    student fields of study (e.g. "Data Science, AI, Statistics, and
+    Analytics") to a curated list of resource *names* that must exactly
+    string-match the CSV's `Name` column. **If you rename a resource in the
+    CSV, you must also update its name everywhere it appears in
+    `MAJOR_RESOURCE_MAP`**, or it silently drops out of that major's filter
+    results (no error — it just won't match). Not every resource is mapped
+    to a major; unmapped ones only show up under "All".
   - Both multi-selects share one generic implementation
     (`MULTISELECT_CONFIGS`, `renderMultiSelectPanel`, `setupMultiSelects`)
     — extend that object if a third multi-select filter is ever needed
@@ -188,6 +251,34 @@ render `<p>` tags).
   than inventing a new one.
 - **Share menu** per resource card (copy link / SMS / email / X / LinkedIn /
   Facebook, or the native OS share sheet if available).
+- **Multi-resource selection & bulk share/export**: every resource card has a
+  checkbox (`data-select-resource="<slug>"`) toggling membership in
+  `state.selectedResources` (a `Set` of slugs, kept in JS state so it
+  survives search/filter/sort re-renders — `cardTemplate()` reads
+  `state.selectedResources.has(slug)` fresh on every render rather than
+  relying on the checkbox DOM surviving). The "Share Multiple Resources"
+  button above the search bar (`#share-multiple-btn`) shows a live count
+  badge and is disabled at zero, as is the adjacent `#clear-selected-btn`
+  ("Clear All Selected"), which empties `state.selectedResources`, re-renders
+  the grid to uncheck every box, and closes the modal if it's open. Clicking
+  it opens `#share-multiple-modal`,
+  listing each selected resource's categories/name/url/description (with a
+  per-row `×` to deselect without leaving the modal) plus five actions, all
+  operating on `getSelectedResourcesOrdered()`:
+  - **Download PDF** opens a new tab with a plain print-styled HTML doc and
+    calls `window.print()` so the user saves it via the browser's own
+    print-to-PDF — deliberately not using a PDF-generation library, to stay
+    consistent with this project's no-build-step/no-extra-dependency
+    approach (Tailwind's CDN script is the only external script it loads).
+  - **Download CSV** / **Download Markdown** build the file content in
+    memory (`shareMultipleCsv()` / `shareMultipleMarkdown()`) and trigger it
+    via a Blob + temporary `<a download>`, no server round-trip.
+  - **Copy to Clipboard** and **Share** both use the plain-text form
+    (`shareMultiplePlainText()`); Share prefers `navigator.share()` (native
+    OS share sheet) and falls back to clipboard-copy + toast if unavailable.
+  - All the CSV/Markdown/plain-text builder functions are scoped inside the
+    same page-wide IIFE as everything else — they're not reachable from the
+    browser console's top-level scope, which is expected, not a bug.
 - **"Suggest a Resource" modal** and **"Become a Connected Mentor" form**
   don't hit a backend — they build a pre-filled GitHub Issue URL
   (`github.com/HackHPC/hpcresources-pearc26/issues/new?...`) and open it in a
@@ -248,14 +339,18 @@ bundle exec jekyll serve     # http://localhost:4000
 - **Always write full URLs with `https://` scheme** in the CSVs/YAML — several
   older rows were missing it and relied on the JS's `normalizeUrl()` fallback;
   don't add new rows that depend on that fallback.
-- **Don't silently mass-import external data.** A prior session pulled from
-  HackHPC's sibling repo `facultyhack-gateways26`'s `_data/resources.yml`
-  (a much broader, general-hackathon-tooling resource list) to refresh URLs/
-  descriptions here — but only after explicitly confirming scope with the
-  user (fix overlaps only vs. add new vs. full mirror), because that yml
-  bundles in a lot of content (GitHub, Python, Figma, generic AI tools) that
-  doesn't fit this site's HPC/career/mentorship focus. Ask before broad
-  imports; don't assume "sync everything" is wanted.
+- **Don't silently mass-import external data.** HackHPC's sibling repo
+  `facultyhack-gateways26`'s `_data/resources.yml` (a much broader, general-
+  hackathon-tooling resource list) has been used as a *source* here more
+  than once — but only for a specific, user-named slice, never a blanket
+  sync. The concrete precedent: the user pasted 27 named "AI Tools &
+  Resources" entries (with descriptions but no URLs) and pointed at that
+  file specifically to fill in the URLs — all 27 names matched exactly,
+  confirming it as the right source. That yml also bundles a lot of content
+  (GitHub, Python, Figma, generic dev tools) that doesn't fit this site's
+  HPC/career/mentorship focus — don't pull anything beyond what's actually
+  been asked for, and don't assume "sync everything" is wanted just because
+  the source file is available.
 - **Confirm before removing or restructuring existing entries** — e.g.
   mentor/resource rows have been removed before (placeholder mentors with
   fake LinkedIn URLs, duplicate/dead resources) but only on explicit user
