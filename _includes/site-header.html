@@ -1,0 +1,66 @@
+<!-- Brand stripe -->
+<div class="h-1 w-full brand-bar"></div>
+
+<!-- Top informational banner -->
+<div class="w-full bg-white border-b border-slate-200 text-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-center sm:justify-between gap-2">
+    <div class="flex items-center gap-1.5 text-slate-500">
+      <span class="hidden sm:inline">Official conference resources:</span>
+      <a href="https://pearc.acm.org/pearc26/" target="_blank" rel="noopener noreferrer" class="text-pearc-orange hover:text-pearc-orange-dark font-semibold underline decoration-orange-300 underline-offset-2">ACM PEARC26 Conference ↗</a>
+      <span class="text-slate-300">|</span>
+      <a href="https://pearc.acm.org/pearc26/student-program/" target="_blank" rel="noopener noreferrer" class="text-pearc-blue hover:text-pearc-blue-dark font-semibold underline decoration-blue-300 underline-offset-2">Student Program Hub ↗</a>
+    </div>
+    <a href="https://github.com/HackHPC/hpcresources-pearc26" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-slate-600">github.com/HackHPC/hpcresources-pearc26</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div>
+      <span class="text-[11px] font-semibold tracking-[0.25em] text-slate-400 uppercase">2026 · Student Program Companion</span>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+        <span class="text-pearc-orange">PEAR26</span>
+        <span class="text-pearc-navy"> Student Program HPC Resource Directory</span>
+      </h1>
+      <div class="h-[3px] w-28 brand-bar rounded-full mt-1.5 mb-2"></div>
+      <p class="text-sm text-slate-500">
+        Curated by <span class="text-slate-700 font-medium">HackHPC</span> for undergraduate students &amp; hackathon participants — a companion to the official <span class="text-slate-700 font-medium">ACM PEARC26 Student Program</span>.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="border border-pearc-blue/30 bg-blue-50/60 rounded-full px-4 py-2 flex items-center gap-2">
+        <span class="relative flex h-2 w-2">
+          <span class="pulse-dot absolute inline-flex h-full w-full rounded-full bg-pearc-orange"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-pearc-orange"></span>
+        </span>
+        <span class="text-sm text-pearc-blue-dark font-semibold"><span id="resource-count">--</span> Pipelines Live</span>
+      </div>
+
+      <button type="button" id="suggest-resource-btn"
+         class="bg-pearc-orange hover:bg-pearc-orange-dark text-white font-semibold text-sm px-4 py-2.5 rounded-md shadow-sm transition whitespace-nowrap">
+        ➕ Suggest a Resource
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-4 text-sm font-semibold tracking-wide" role="tablist">
+    <button data-tab="directory" role="tab" aria-selected="true" class="tab-btn relative py-3 text-pearc-navy border-b-2 border-pearc-orange">
+      Resource Directory
+    </button>
+    <span class="text-pearc-orange">|</span>
+    <button data-tab="mentors" role="tab" aria-selected="false" class="tab-btn relative py-3 text-slate-400 hover:text-pearc-blue border-b-2 border-transparent">
+      Connected Mentors
+    </button>
+    <span class="text-pearc-orange">|</span>
+    <button data-tab="speakers" role="tab" aria-selected="false" class="tab-btn relative py-3 text-slate-400 hover:text-pearc-blue border-b-2 border-transparent">
+      Groundwork for Greatness
+    </button>
+    <span class="text-pearc-orange">|</span>
+    <button data-tab="faq" role="tab" aria-selected="false" class="tab-btn relative py-3 text-slate-400 hover:text-pearc-blue border-b-2 border-transparent">
+      FAQ
+    </button>
+  </nav>
+</header>

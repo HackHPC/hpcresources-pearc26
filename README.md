@@ -2,7 +2,7 @@
 
 An open-source, student-focused HPC resource hub built by **HackHPC** as a companion to the official [ACM PEARC26 Student Program](https://pearc.acm.org/pearc26/student-program/).
 
-The site is built with **Jekyll** for GitHub Pages. `index.html` is a single Jekyll page (vanilla JS + Tailwind CSS via CDN) whose data comes from Jekyll data files — Jekyll parses the CSV/YAML files at build time and embeds them as JSON directly in the page, so there's no runtime CSV/YAML fetch or parse, and no separate build tooling beyond Jekyll itself.
+The site is built with **Jekyll** for GitHub Pages — a single page (vanilla JS + Tailwind CSS via CDN) whose data comes from Jekyll data files. Jekyll parses the CSV/YAML files at build time and embeds them as JSON directly in the page, so there's no runtime CSV/YAML fetch or parse, and no separate build tooling beyond Jekyll itself. `index.html` is a thin shell that assembles the page from Jekyll `_includes/` partials, with all JS/CSS in their own files under `assets/` — there's no bundler or JS framework, just plain `<script src>`/`<link>` tags.
 
 ## Project structure
 
@@ -13,14 +13,56 @@ _data/
   PEARC26-HPCResourceList-FullList.csv   Resource directory data → "Resource Directory" tab
   mentors.csv                            Connected Mentors roster → "Connected Mentors" tab
   speakers.yml                           Speaker bios → "Groundwork for Greatness" tab
+_includes/
+  head.html                              <head> contents: meta/OG/Twitter tags, fonts, Tailwind
+  site-header.html                       Brand stripe, top banner, header, and tab nav
+  tab-directory.html                     "Resource Directory" tab
+  tab-mentors.html                       "Connected Mentors" tab
+  tab-speakers.html                      "Groundwork for Greatness" tab
+  tab-faq.html                           "FAQ" tab
+  site-footer.html                       Footer
+  suggest-modal.html                     "Suggest a Resource" modal
+  share-multiple-modal.html              "Share Multiple Resources" modal
 assets/
+  css/main.css                           Custom CSS (Tailwind handles the rest via CDN)
+  js/app.js                              All client-side JS — state, rendering, filtering, sharing, forms, tabs
+  js/tailwind-config.js                  Tailwind theme config (fonts, brand colors)
   favicons/                              Icons for speaker affiliations
   favicons/resources/                    Icons for each resource card, one SVG per resource
   speakers/                              Speaker headshot photos
   screenshots/                           Screenshots embedded in the FAQ tab
   og-image.png                           Social-share preview image (link previews on Slack, X, LinkedIn, etc.)
-index.html      The entire app: layout, styles, and JS — all four tabs, reading the embedded JSON
+index.html      Thin shell: assembles the page from the includes above, plus the embedded JSON data
 ```
+
+## What each file affects on the site
+
+**`_includes/` (page structure — each renders as plain HTML in the built page)**
+
+| File | What it controls |
+| --- | --- |
+| `head.html` | The browser tab title, search-engine description, favicon, the social-share preview card shown when the site's link is pasted into Slack/X/LinkedIn/etc., and loading the fonts + Tailwind. |
+| `site-header.html` | The top info banner, the sticky header (title, "Pipelines Live" counter, "Suggest a Resource" button), and the 4-tab navigation bar — visible on every tab. |
+| `tab-directory.html` | The **Resource Directory** tab: the search box, category/major filter dropdowns, sort dropdown, the "Share Multiple Resources"/"Clear All Selected" buttons, and the resource card grid. |
+| `tab-mentors.html` | The **Connected Mentors** tab: the mentor sign-up form and the mentor card grid. |
+| `tab-speakers.html` | The **Groundwork for Greatness** tab: the heading and the speaker bio list. |
+| `tab-faq.html` | The **FAQ** tab: every accordion question/answer and the "Still Need Help?" support form. |
+| `site-footer.html` | The footer at the bottom of the page (GitHub link, copyright, conference links). |
+| `suggest-modal.html` | The "Suggest a Resource" popup form (opened from the header button). |
+| `share-multiple-modal.html` | The "Share Multiple Resources" popup (opened after selecting one or more resource checkboxes). |
+
+**CSS**
+
+| File | What it controls |
+| --- | --- |
+| `assets/css/main.css` | The handful of visual effects Tailwind's utility classes can't express: smooth scrolling, the orange→blue "brand-bar" gradient, description text truncating to 4 lines until hovered, the pulsing "live" dot and "Mentorship Available" badge, the highlight glow when jumping to a linked card, and the toast notification's slide/fade transition. |
+
+**JavaScript**
+
+| File | What it controls |
+| --- | --- |
+| `assets/js/tailwind-config.js` | The site's color palette (the `pearc` orange/blue/navy shades used throughout, e.g. `bg-pearc-orange`) and fonts — every Tailwind utility class on the site depends on this. |
+| `assets/js/app.js` | Everything interactive: loading/rendering resources, mentors, and speakers from the embedded data; search, filtering, and sorting; resource favicons; tab switching and URL deep-linking; single- and multi-resource sharing (PDF/CSV/Markdown/clipboard/native share); the Suggest a Resource, Become a Mentor, and Support Question forms; and toast notifications. |
 
 ## Live features
 
@@ -79,7 +121,7 @@ A list of speakers, each with `name`, `title`, `photo` (optional, falls back to 
 ## Contributing
 
 - **Suggest a resource**, **become a mentor**, or **ask a support question** using the forms on the live site — all three open a pre-filled GitHub Issue for maintainers to review.
-- Pull requests to the data files or `index.html` are welcome.
+- Pull requests to the data files, `_includes/`, or `assets/js/app.js` are welcome.
 
 ## Local preview
 

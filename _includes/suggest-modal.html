@@ -1,0 +1,51 @@
+<!-- Suggest a Resource Modal -->
+<div id="suggest-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="suggest-modal-backdrop" class="absolute inset-0 bg-slate-900/50"></div>
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+    <div class="flex items-start justify-between mb-1">
+      <h2 class="text-lg font-bold text-pearc-navy">Suggest a Resource</h2>
+      <button type="button" id="suggest-modal-close" aria-label="Close" class="text-slate-400 hover:text-pearc-orange text-2xl leading-none">&times;</button>
+    </div>
+    <p class="text-sm text-slate-500 mb-5">
+      Submitting opens a pre-filled GitHub Issue on our repository. A HackHPC admin will review it and add it to the directory.
+    </p>
+
+    <form id="suggest-form" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-title">Resource Title</label>
+        <input id="s-title" required type="text" placeholder="Women in HPC (WHPC)"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-category">Category</label>
+        <input id="s-category" required type="text" list="suggest-category-list" placeholder="e.g. Communities & Mentorship"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+        <datalist id="suggest-category-list"></datalist>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-url">URL</label>
+        <input id="s-url" type="text" placeholder="https://womeninhpc.org"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-description">Description</label>
+        <textarea id="s-description" required rows="3" placeholder="What is this resource, and who is it for?"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1" for="s-contact">
+          Contact Person <span class="text-slate-400 font-normal normal-case">(optional — enables the mentorship highlight)</span>
+        </label>
+        <input id="s-contact" type="text" placeholder="Jane Doe - jane@example.edu"
+          class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+      </div>
+
+      <button type="submit" class="bg-pearc-orange hover:bg-pearc-orange-dark w-full text-white font-semibold text-sm px-4 py-3 rounded-md shadow-sm transition">
+        Submit via GitHub Issue ↗
+      </button>
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        This will open <span class="text-slate-500">github.com/HackHPC/hpcresources-pearc26</span> in a new tab with your information pre-filled as a new issue.
+      </p>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<!-- Share Multiple Resources Modal -->
+<div id="share-multiple-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="share-multiple-modal-backdrop" class="absolute inset-0 bg-slate-900/50"></div>
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+    <div class="flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-100">
+      <div>
+        <h2 class="text-lg font-bold text-pearc-navy">Share Multiple Resources</h2>
+        <p id="share-multiple-modal-count" class="text-xs text-slate-400 mt-0.5">0 resources selected</p>
+      </div>
+      <button type="button" id="share-multiple-modal-close" aria-label="Close" class="text-slate-400 hover:text-pearc-orange text-2xl leading-none shrink-0">&times;</button>
+    </div>
+
+    <div id="share-multiple-items" class="p-6 pt-4 space-y-3 overflow-y-auto flex-1"></div>
+
+    <div class="p-6 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
+      <button type="button" id="share-multiple-pdf"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📄 Download PDF
+      </button>
+      <button type="button" id="share-multiple-csv"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📊 Download CSV
+      </button>
+      <button type="button" id="share-multiple-markdown"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📝 Download Markdown
+      </button>
+      <button type="button" id="share-multiple-copy"
+        class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-blue hover:text-pearc-blue-dark text-slate-600 font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition">
+        📋 Copy to Clipboard
+      </button>
+      <button type="button" id="share-multiple-share"
+        class="inline-flex items-center gap-1.5 bg-pearc-orange hover:bg-pearc-orange-dark text-white font-semibold text-xs px-3.5 py-2.5 rounded-md shadow-sm transition ml-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share
+      </button>
+    </div>
+  </div>
+</div>

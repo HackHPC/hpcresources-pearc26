@@ -1,0 +1,54 @@
+  <!-- ============ TAB B: CONNECTED MENTORS ============ -->
+  <section id="tab-mentors" class="tab-panel hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Volunteer submission form -->
+      <div class="lg:col-span-1">
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 sticky top-32">
+          <h2 class="text-lg font-bold text-pearc-navy mb-1">Become a Connected Mentor</h2>
+          <p class="text-sm text-slate-500 mb-5">
+            Submitting opens a pre-filled GitHub Issue on our repository. A HackHPC admin will verify your details and add you to the mentor roster.
+          </p>
+
+          <form id="mentor-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-name">Full Name</label>
+              <input id="m-name" required type="text" placeholder="Ada Lovelace"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-email">Email Address</label>
+              <input id="m-email" required type="email" placeholder="ada@example.edu"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-institution">Institution / Affiliation</label>
+              <input id="m-institution" required type="text" placeholder="Oak Ridge National Laboratory"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1" for="m-linkedin">LinkedIn Profile URL</label>
+              <input id="m-linkedin" required type="url" placeholder="https://linkedin.com/in/ada-lovelace"
+                class="w-full bg-slate-50 border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-3 py-2.5 text-sm outline-none transition" />
+            </div>
+
+            <button type="submit" class="bg-pearc-orange hover:bg-pearc-orange-dark w-full text-white font-semibold text-sm px-4 py-3 rounded-md shadow-sm transition">
+              Submit via GitHub Issue ↗
+            </button>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              This will open <span class="text-slate-500">github.com/HackHPC/hpcresources-pearc26</span> in a new tab with your information pre-filled as a new issue.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Mentor list -->
+      <div class="lg:col-span-2">
+        <div class="flex items-baseline justify-between mb-4">
+          <h2 class="text-lg font-bold text-pearc-navy">Active Registered Mentors</h2>
+          <span id="mentor-count" class="text-xs text-slate-400"></span>
+        </div>
+        <div id="mentor-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+  </section>

@@ -1,0 +1,51 @@
+html { scroll-behavior: smooth; }
+body { background-color: #F8FAFC; }
+
+.brand-bar {
+  background-image: linear-gradient(90deg, #4F7DA0, #E8622C);
+}
+
+.clamp-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clamp-desc:hover,
+.clamp-desc:focus {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.bio p + p { margin-top: 0.85em; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+@keyframes mentorship-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,98,44,0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(232,98,44,0); }
+}
+.mentorship-badge { animation: mentorship-pulse 1.8s ease-in-out infinite; }
+
+@keyframes hash-glow {
+  0% { box-shadow: 0 0 0 0 rgba(79,125,160,0.9); border-color: rgba(79,125,160,0.9); }
+  50% { box-shadow: 0 0 32px 4px rgba(232,98,44,0.45); border-color: rgba(232,98,44,0.9); }
+  100% { box-shadow: 0 0 0 0 rgba(79,125,160,0); border-color: rgb(226,232,240); }
+}
+.hash-target { animation: hash-glow 2.2s ease-out 1; }
+
+#toast {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.tab-underline {
+  transition: transform 0.25s ease;
+}
+
+::selection { background: rgba(232,98,44,0.2); }

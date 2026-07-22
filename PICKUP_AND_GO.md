@@ -10,8 +10,12 @@ changes immediately, without re-deriving the architecture from scratch.
 Student Program**, built by HackHPC. It's a GitHub Pages site: push to
 `main`, GitHub builds and deploys it automatically, no CI config needed.
 
-There is exactly **one page**, `index.html` — everything lives there as
-four client-side tabs, toggled with no page reload or URL change:
+There is exactly **one page**. Until 2026-07-22 it was one giant `index.html`
+file; it's now assembled from `index.html` (a thin shell) plus Jekyll
+`_includes/*.html` partials, `assets/js/*.js`, and `assets/css/main.css` —
+see "File map" and "How the page is assembled" below for exactly how that
+split works. Conceptually it's still four client-side tabs, toggled with no
+page reload or URL change:
 
 - **Resource Directory** (`#tab-directory`) — searchable/filterable
   directory of HPC communities, funding, training, conferences, and career
@@ -38,21 +42,68 @@ point it at `index.html` and let the tab button handle it.
 
 There is no separate frontend build step, no npm, no bundler beyond Ruby's
 Bundler for Jekyll itself. Tailwind is loaded from a CDN (`cdn.tailwindcss.com`)
-and configured inline in the page's `<script>` block.
+and configured in `assets/js/tailwind-config.js`, a plain static JS file
+(no Liquid in it — see below).
 
-## How the page actually works
+## How the page is assembled
 
-1. Front matter `layout: null` — Jekyll processes Liquid in the file but
-   doesn't wrap it in a theme layout. The file *is* the whole page.
-2. Data lives in `_data/*.csv` or `_data/*.yml`. Jekyll parses these at
+1. Front matter `layout: null` on `index.html` — Jekyll processes Liquid in
+   the file but doesn't wrap it in a theme layout.
+2. `index.html` itself is now just a **thin shell**: the `<head>`, `<body>`
+   open tag (with one important data attribute, see below), and a sequence
+   of `{% include ... %}` tags pulling in `_includes/head.html`,
+   `_includes/site-header.html`, one `_includes/tab-*.html` per tab,
+   `_includes/site-footer.html`, and the two modal partials
+   (`_includes/suggest-modal.html`, `_includes/share-multiple-modal.html`).
+   Jekyll inlines each include's content at build time — the built
+   `_site/index.html` is one normal complete HTML file, same as before the
+   split; only the *source* is now spread across files.
+3. **Why `_includes` and not separate pages**: these are partials, not
+   routable pages — `{% include %}` just splices HTML text in at build
+   time, there's no client-side routing, no separate URL per tab. This is
+   different from the earlier `speakers.html` situation (a real second
+   page that got merged into a tab) — `_includes/tab-speakers.html` is not
+   a page, it's a chunk of `index.html`'s markup that lives in its own file
+   purely for editability.
+4. **`assets/js/app.js`** is the single vanilla-JS IIFE with essentially
+   all client-side behavior — state, rendering, filtering, sharing, forms,
+   tabs. It's a **plain static file with zero Liquid in it**, loaded via
+   `<script src="{{ site.baseurl }}/assets/js/app.js">` near the end of
+   `<body>`, in the same position the inline `<script>` used to occupy —
+   execution order/timing is unchanged. Because it can't use `{{ site.baseurl
+   }}` directly (Jekyll doesn't process Liquid in `.js` files without front
+   matter, and this one intentionally has none, to keep it a boring static
+   asset), `index.html`'s `<body>` tag carries
+   `data-baseurl="{{ site.baseurl }}"`, and `app.js` reads it once at the
+   top: `const SITE_BASEURL = document.body.dataset.baseurl || '';`. If you
+   ever need another Jekyll variable inside `app.js`, extend that one data
+   attribute rather than adding Liquid front matter to the JS file — keeping
+   `app.js` build-tool-free is deliberate.
+5. **`assets/js/tailwind-config.js`** is similarly static and Liquid-free —
+   it only sets `tailwind.config = {...}` (fonts, the `pearc` color
+   palette), which doesn't need any site data. It's loaded via
+   `<script src>` immediately after the Tailwind CDN `<script src>` tag in
+   `_includes/head.html` — order matters here (the CDN script must run
+   first to create the global `tailwind` object), and both are plain
+   blocking `<script src>` tags (no `defer`/`async`), so document order is
+   sufficient to guarantee it.
+6. **`assets/css/main.css`** holds the handful of custom rules Tailwind's
+   utility classes can't express (the `brand-bar` gradient, the
+   `clamp-desc` line-clamp, the pulse/glow keyframe animations, etc.) —
+   also static, loaded via a plain `<link rel="stylesheet">`.
+7. Data lives in `_data/*.csv` or `_data/*.yml`. Jekyll parses these at
    **build time** and exposes them as `site.data.<filename-without-extension>`.
-3. Each dataset is embedded as JSON in its own
+8. Each dataset is embedded as JSON in its own
    `<script type="application/json">` tag via
    `{{ site.data.whatever | jsonify | replace: "</", "<\/" }}` — the
    `replace` guards against a literal `</script>` inside a description
    breaking out of the tag. There are three: `#resource-data`,
-   `#mentor-data`, `#speaker-data`.
-4. One vanilla-JS IIFE at the bottom of the page reads each JSON blob with
+   `#mentor-data`, `#speaker-data`. These three tags **stayed inline in
+   `index.html`** rather than moving into an include or `app.js` — they're
+   Jekyll-templated output, not reusable markup or static logic, so neither
+   move made sense; they're the one place left where `index.html` still
+   contains real page-specific content instead of pure assembly.
+9. `app.js` reads each JSON blob with
    `JSON.parse(document.getElementById('...').textContent)` and renders it
    client-side into that tab's markup (card grid, mentor grid, or speaker
    list). No runtime fetch, no CSV/YAML parsing in the browser — Jekyll
@@ -61,8 +112,9 @@ and configured inline in the page's `<script>` block.
    only toggles a `hidden` class, it doesn't lazy-load anything.
 
 This means: **to change what data appears, edit the file in `_data/`, not
-the HTML.** The HTML only needs to change if you're changing *how* something
-renders, adding a new data file, or changing page structure/behavior.
+the HTML.** The HTML/JS only needs to change if you're changing *how*
+something renders, adding a new data file, or changing page
+structure/behavior.
 
 ## File map
 
@@ -73,20 +125,34 @@ _data/
   PEARC26-HPCResourceList-FullList.csv       Resource directory data → "Resource Directory" tab
   mentors.csv                                Connected Mentors roster → "Connected Mentors" tab
   speakers.yml                               Groundwork for Greatness speaker bios → "Groundwork for Greatness" tab
+_includes/
+  head.html                                  <head> contents: meta/OG/Twitter tags, fonts, Tailwind CDN + config, main.css link
+  site-header.html                           Brand stripe, top banner, header, and the 4-tab nav
+  tab-directory.html                         "Resource Directory" tab panel markup
+  tab-mentors.html                           "Connected Mentors" tab panel markup
+  tab-speakers.html                          "Groundwork for Greatness" tab panel markup
+  tab-faq.html                               "FAQ" tab panel markup (accordion + support form)
+  site-footer.html                           <footer> markup
+  suggest-modal.html                         "Suggest a Resource" modal markup
+  share-multiple-modal.html                  "Share Multiple Resources" modal markup
 assets/
+  css/main.css                               Custom CSS Tailwind utilities can't express (static, no Liquid)
+  js/app.js                                  All client-side JS — state, rendering, filtering, sharing, forms, tabs (static, no Liquid)
+  js/tailwind-config.js                      tailwind.config = {...} (static, no Liquid, loaded right after the CDN script)
   favicons/                                  SVG-wrapped org favicons for speaker affiliations (see below)
   favicons/resources/                        SVG-wrapped favicons for resource cards, one per resource (see below)
   speakers/                                  Speaker headshot photos, referenced by speakers.yml `photo`
   screenshots/                               PNG screenshots embedded in the FAQ tab (see below)
   og-image.png                               Social share preview image (see "SEO / social sharing" below)
-index.html                                   The entire site: layout + styles + JS + all four tabs
+index.html                                   Thin shell: front matter + <head>/<body> wrapper + {% include %} calls + the 3 embedded-JSON <script> tags + the app.js <script src>
 README.md                                    Human-facing project README (may lag behind this file — check both)
 ```
 
 ## SEO / social sharing
 
-`index.html`'s `<head>` has canonical/Open Graph/Twitter Card meta tags
-(added 2026-07-22) built from `site.title` / `site.description` /
+`_includes/head.html` has canonical/Open Graph/Twitter Card meta tags
+(added 2026-07-22, moved into this include on 2026-07-22) built from
+`site.title` / `site.description` /
 `site.url` / `site.baseurl` in `_config.yml` — **to change the title or
 description that appears in search results or link previews, edit
 `_config.yml`, not the meta tags themselves.** The tags are just templated
@@ -135,7 +201,7 @@ than one badge and match more than one filter checkbox — use an existing
 category value unless a new one is genuinely warranted), `Description`
 (optional, clamped to 4 lines until hover/focus).
 
-  - The category `PEARC EXHIBITOR` is special-cased in `index.html`
+  - The category `PEARC EXHIBITOR` is special-cased in `assets/js/app.js`
     (`EXHIBITOR_CATEGORY` constant): it renders with a violet/fuchsia
     gradient badge + 🎪 icon and a violet left-border accent on the card,
     instead of the default blue badge. If you rename or retire this
@@ -216,7 +282,7 @@ The JS matches a resource's `Contact Person` name against `mentors.csv`'s
 that mentor's profile — so if you add a mentor, the name in `Contact Person`
 on the resource CSV must match exactly for the link to appear.
 - **`Affiliation` follows an `Org Name · Role/Team` convention** (separated
-  by ` · `, not a plain hyphen). `mentorAffiliationHtml()` in `index.html`
+  by ` · `, not a plain hyphen). `mentorAffiliationHtml()` in `assets/js/app.js`
   splits on the first ` · ` and independently links each half via the shared
   `affiliationLink()` helper: the org-name portion links to `Affiliation URL`
   if set, and the role/team portion links to `Role URL` if set (e.g. Suzanna
@@ -245,7 +311,7 @@ render `<p>` tags).
     fabricate an icon for an org with no real favicon — use `emoji` instead
     (ask the user what to use if it's not obvious).
 
-## Notable behaviors in index.html
+## Notable behaviors (mostly in assets/js/app.js)
 
 - **Resource favicons**: each resource card shows a small icon to the left
   of its title, at `/assets/favicons/resources/<slugified-title>.svg` —
@@ -326,7 +392,7 @@ render `<p>` tags).
     logic (matches any selected category).
   - **Major filter** — same checkbox multi-select UI (also alphabetized),
     but sourced from a **hardcoded JS mapping**, `MAJOR_RESOURCE_MAP`
-    (search for it in `index.html`), not from the CSV. It maps ~10 broad
+    (search for it in `assets/js/app.js`), not from the CSV. It maps ~10 broad
     student fields of study (e.g. "Data Science, AI, Statistics, and
     Analytics") to a curated list of resource *names* that must exactly
     string-match the CSV's `Name` column. **If you rename a resource in the
@@ -529,14 +595,25 @@ bundle exec jekyll serve     # http://localhost:4000
   mentor/resource rows have been removed before (placeholder mentors with
   fake LinkedIn URLs, duplicate/dead resources) but only on explicit user
   request, not proactively.
-- **Prefer a new tab in `index.html` over a new standalone page** — this is
-  exactly what happened to `speakers.html` (see top of this file): it
-  started as its own page, and was merged into a third tab once the site
-  had an established tab pattern (Resource Directory / Connected Mentors)
-  to match. If a genuinely standalone page is ever warranted again, follow
-  the same `layout: null` + embedded-JSON-from-`_data` + vanilla-JS-render
-  pattern rather than introducing a new templating approach, a JS
-  framework, or a build step.
+- **Prefer a new tab (as a new `_includes/tab-*.html` partial) over a new
+  standalone page** — this is exactly what happened to `speakers.html` (see
+  top of this file): it started as its own page, and was merged into a
+  third tab once the site had an established tab pattern (Resource
+  Directory / Connected Mentors) to match. If a genuinely standalone page
+  is ever warranted again, follow the same `layout: null` +
+  embedded-JSON-from-`_data` + vanilla-JS-render pattern rather than
+  introducing a new templating approach, a JS framework, or a build step.
+- **Splitting `index.html` into `_includes`/`assets/js`/`assets/css`
+  (2026-07-22) was a request to simplify the source file, not an
+  architecture change** — the built output is byte-for-byte the same kind
+  of single static page it always was; only where the source *text* lives
+  changed. Don't read this split as license to introduce a bundler, a JS
+  framework, or `type="module"`/ES-import semantics — `app.js` is still one
+  classic (non-module) script sharing the global scope the same way the
+  original inline `<script>` did, just relocated. If this project ever
+  needs real modularization beyond what a few `_includes` and 2 JS files
+  provide, that's a bigger decision worth raising with the user first, same
+  as any other architecture-level change here.
 - **Verifying JS-driven UI changes**: this repo has no npm/Puppeteer/
   Selenium. To actually confirm interactive behavior (not just that the
   page loads), launch Chrome headless with remote debugging and drive it
