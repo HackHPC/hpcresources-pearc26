@@ -2,7 +2,9 @@
   <section id="tab-directory" class="tab-panel">
 
     <!-- Multi-resource selection -->
-    <div class="flex justify-end items-center gap-2 mb-3">
+    <div class="flex justify-between items-center gap-2 mb-3 flex-wrap">
+      <p class="text-xs text-slate-400">Last updated: {{ site.time | date: "%B %-d, %Y at %-I:%M %p %Z" }}</p>
+      <div class="flex items-center gap-2">
       <button type="button" id="clear-selected-btn" disabled
         class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-pearc-orange hover:text-pearc-orange-dark text-slate-500 font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-slate-300 disabled:hover:text-slate-500">
         ✕ Clear All Selected
@@ -13,6 +15,7 @@
         Share Multiple Resources
         <span id="share-multiple-count" class="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-pearc-orange text-white text-xs font-bold">0</span>
       </button>
+      </div>
     </div>
 
     <!-- Search + Major/Category filters -->

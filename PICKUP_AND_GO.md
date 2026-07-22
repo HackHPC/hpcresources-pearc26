@@ -427,6 +427,22 @@ render `<p>` tags).
 - **Sort dropdown** (`#sort-filter`) — "Name (A–Z)" (default) or "Category
   (A–Z)" (groups by each resource's first category, then by name). Applied
   after filtering, in `sortResources()`.
+- **"Last updated" timestamp** on the Resource Directory tab
+  (`_includes/tab-directory.html`) is
+  `{{ site.time | date: "%B %-d, %Y at %-I:%M %p %Z" }}` — Jekyll's own
+  build time (date + time + timezone abbreviation, e.g. "July 22, 2026 at
+  3:44 PM EDT"), not a git-log lookup or a `_data` field. The timezone
+  shown is whatever the build machine's local timezone is (GitHub Actions'
+  runners default to UTC) — there's no `timezone:` set in `_config.yml`, so
+  don't be surprised if it differs between a local build and the deployed
+  one. This
+  means it reflects **when the site was last built/deployed**, not
+  necessarily when the CSV/YAML data itself last changed — since every push
+  to `main` rebuilds the whole site anyway, in practice those two times
+  are close enough that a separate per-file "last changed" mechanism (which
+  would need a git-log lookup or a custom Jekyll plugin) wasn't worth the
+  added complexity. `site.time` needs no plugin and no front matter beyond
+  what's already there.
 - **Deep linking**: every resource card has id `resource-<slugified-title>`
   and every mentor card has id `mentor-<slugified-name>`; a `#resource-...`
   or `#mentor-...` URL hash scrolls to and glow-highlights the target on
