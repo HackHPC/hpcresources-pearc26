@@ -13,13 +13,13 @@ Latinas in STEM,https://www.latinasinstem.com/,,Professional Organizations,"Adva
 SHPE (Society of Hispanic Professional Engineers),https://shpe.org/,,Professional Organizations,"The world's largest resource for empowering the Latinx community to achieve their goals as engineers and scientists. Offers conferences, scholarships, career fairs, and professional development."
 ACM,https://www.acm.org,,Professional Organizations,"Association for Computing Machinery - the world's largest educational and scientific computing society. Student memberships, SIGs, and conferences."
 IEEE Computer Society,https://www.computer.org,,Professional Organizations,IEEE Computer Society advancing computing theory and practice. Student memberships and specialized technical committees.
-US-RSE (Research Software Engineering Association),https://us-rse.org/,,Professional Organizations,"Professional organization for Scientific Computing and Research Software Engineering. Offers networking, professional development, job opportunities, and community building."
+US-RSE (Research Software Engineering Association),https://us-rse.org/,,Professional Organizations,"Professional organization for Scientific Computing and Research Software Engineering. Offers networking, professional development, job opportunities, and community building. On-site exhibitor at PEARC26."
 ACCESS Careers,https://access-ci.org/news/careers/,,Jobs & Careers,ACCESS career board listing computing and cyberinfrastructure positions at academic and research institutions nationwide.
 CaRCC HR Job Family Matrix,https://carcc.org/jobs-and-careers/,,Jobs & Careers,"Framework for research computing and data career paths, including salary benchmarks and job family definitions."
 NRP (National Research Platform),https://nrp.ai,,Cyberinfrastructure Resources,"Provides accessible cloud-based computational resources, data science tools, and computing infrastructure for researchers and students across all disciplines."
 Jupyter,https://jupyter.org/,,Cyberinfrastructure Resources,"Interactive notebook platform supporting Python, Julia, R, and other languages for data science and education."
 Apptainer,https://apptainer.org/,,Cyberinfrastructure Resources,"Open-source container platform designed for HPC and scientific computing. Successor to Singularity, enabling reproducible, portable computing environments for research workflows."
-ACCESS Cyberinfrastructure,https://access-ci.org/,,Cyberinfrastructure Resources,"NSF-funded program providing researchers and educators access to national supercomputers, storage, GPUs, and training."
+ACCESS Cyberinfrastructure,https://access-ci.org/,,Cyberinfrastructure Resources,"NSF-funded program providing researchers and educators access to national supercomputers, storage, GPUs, and training. On-site exhibitor at PEARC26."
 NSF GRFP,https://www.nsf.gov/fellowships/,,Fellowships,National Science Foundation Graduate Research Fellowship Program for STEM students pursuing research-based careers.
 DOE CSGF,https://www.krellinst.org/csgf/,,Fellowships,"Department of Energy Computational Science Graduate Fellowship for Ph.D. students using high-performance computing in science and engineering research. Provides a $45,000 annual stipend, full tuition, and a research practicum at a DOE laboratory."
 ACCESS Workshops,https://access-ci.org/events/,,Training Programs,"Workshops and training events covering HPC, data science, visualization, and cyberinfrastructure tools."
@@ -62,3 +62,35 @@ Benjamin Gilman Scholarship,https://gilmanscholarship.org,,Scholarships & Intern
 NCAR Explorer Series,https://edec.ucar.edu/public/ncar-explorer-series,Agbeli Ameko,Outreach & Resources,Public lectures and educational outreach materials published by NCAR.
 NCAR PI-WRF Teaching Box,https://ncar.github.io/piwrf-teachingbox/pages/about.html,Agbeli Ameko,Outreach & Resources,Educational resources and teaching boxes provided by NCAR for weather modeling.
 WeTeachCS,https://weteachcs.org,,Outreach & Resources,An educational program run by TACC designed to prepare K-12 teachers for computer science certifications
+Cambridge Computer,,,PEARC EXHIBITOR,"Helps universities, labs, and research-driven enterprises design and deploy research computing, AI, HPC, storage, networking, and on-prem cloud infrastructure. Title sponsor since 1991; NVIDIA and VAST Data award winner."
+AWS,https://aws.amazon.com/,,PEARC EXHIBITOR,"World's most comprehensive, broadly adopted cloud platform, offering extensive cloud and AI capabilities on global infrastructure."
+DDN,https://www.ddn.com/,,PEARC EXHIBITOR,"Data Intelligence Platform built for AI practitioners; partners with NVIDIA, Supermicro, and Google Cloud on large-scale AI training and inference infrastructure."
+Google Cloud,https://cloud.google.com/,,PEARC EXHIBITOR,"Full-stack, AI-optimized ecosystem for academia with 150+ products, 200+ foundation models, and 100PB+ of open datasets."
+CIQ,http://ciq.com,,PEARC EXHIBITOR,"Founding support/services partner of Rocky Linux; delivers enterprise Linux infrastructure for sovereign AI and HPC (Rocky Linux, Ascender Pro, Fuzzball, Warewulf Pro, Apptainer)."
+Cirrascale,https://www.cirrascale.com/,,PEARC EXHIBITOR,"""The Expert Neocloud for Private AI."""
+Dell Technologies,https://www.dell.com/en-us,,PEARC EXHIBITOR,"Broad technology and services portfolio for the AI era across devices, infrastructure, and services."
+HPE (with AMD),,,PEARC EXHIBITOR,"Enterprise technology leader combining AI, cloud, and networking to optimize performance and turn data into foresight."
+Lenovo (with AMD),https://www.lenovo.com,,PEARC EXHIBITOR,"$69B global tech company; full-stack AI-enabled/ready/optimized devices, infrastructure, software and services."
+Internet2,https://internet2.edu/,,PEARC EXHIBITOR,"Nonprofit tech community providing high-speed national network, eduroam, cloud, and IAM (InCommon) services for research/education."
+SHI Public Sector (with Dell),https://www.shi.com/,,PEARC EXHIBITOR,"Dedicated R1 team providing tailored IT procurement, security, and innovation support for research institutions."
+AuriStor,https://www.auristor.com/,,PEARC EXHIBITOR,"Global Namespace Distributed File System for multi-site, geographically distributed storage with strong security and scalability."
+Mark III Systems,,,PEARC EXHIBITOR,"NVIDIA Elite Partner building AI, GenAI, Agentic AI, HPC, and digital twin Centers of Excellence with research institutions."
+NCSA,https://ncsa.illinois.edu,,PEARC EXHIBITOR,"Since 1986, a hub for transdisciplinary research and advanced cyberinfrastructure at the University of Illinois."
+Atempo,https://www.atempo.com/,,PEARC EXHIBITOR,"Miria platform for moving, protecting, archiving, and migrating unstructured data across file, object, tape, and cloud storage."
+BeeGFS (ThinkParQ),https://www.beegfs.io/c/,,PEARC EXHIBITOR,"Leading parallel file system for HPC, AI/ML, media, life sciences, and oil & gas; Community and Enterprise editions."
+CASC,https://casc.org/,,PEARC EXHIBITOR,National nonprofit representing academic HPC/research computing institutions; advocacy and policy engagement with federal agencies.
+ConfidentialMind,https://www.confidentialmind.com/,,PEARC EXHIBITOR,"Platform for deploying generative AI apps/agents on confidential data within your own environment. Based in Espoo, Finland & San Francisco."
+Cornelis Networks,https://www.cornelis.com/,,PEARC EXHIBITOR,"Open, intelligent high-performance networking solutions for demanding technical computing."
+Globus,https://www.globus.org/,,PEARC EXHIBITOR,"Data management and compute platform (Univ. of Chicago) for secure file transfer, sharing, and automation; connects 50,000+ orgs in 80+ countries."
+Microway,https://www.microway.com/,,PEARC EXHIBITOR,"Since 1982, designs HPC/AI hardware — clusters, servers, workstations, storage, and fabric solutions."
+Neuvys Technologies / NetApp,https://neuvys.com/,,PEARC EXHIBITOR,"Neuvys: woman-owned HPC/AI systems integrator. NetApp: Intelligent Data Infrastructure company built on ONTAP, AI Data Engine, and AFX."
+NICS / AI Tennessee,,,PEARC EXHIBITOR,"NICS (Univ. of Tennessee): HPC research, AI workload optimization. AI Tennessee: statewide initiative advancing AI readiness and workforce development."
+Omnibond,https://omnibond.com/,,PEARC EXHIBITOR,"projectEureka: hybrid platform for persistent, browser-accessible AI/simulation workspaces; also maintains OrangeFS parallel file system."
+Open OnDemand,https://www.openondemand.org/,,PEARC EXHIBITOR,"Provides remote web access to supercomputers for students, researchers, and professionals."
+PNNL,https://www.pnnl.gov/,,PEARC EXHIBITOR,"National lab with strengths in chemistry, Earth sciences, biology, and data science; Research Computing division offers HPC/GPU access and consulting."
+PIER Group,https://www.piergroup.com/,,PEARC EXHIBITOR,"Formed 2018; delivers campus infrastructure, HPC, optical networking, and procurement solutions for research & education."
+PSC (Pittsburgh Supercomputing Center),https://www.psc.edu/,,PEARC EXHIBITOR,"Joint center (Carnegie Mellon + Univ. of Pittsburgh), established 1986; part of NSF cyberinfrastructure program."
+Purdue University (RCAC),https://www.purdue.edu/,,PEARC EXHIBITOR,"Rosen Center for Advanced Computing: HPC, data storage, and research software engineering services; industry workforce training."
+Qblox,https://qblox.com/,,PEARC EXHIBITOR,Global leader in quantum control stacks — modular hardware/software for qubit manipulation; backed by €26M Series A.
+SDSC,https://www.sdsc.edu/index.html,,PEARC EXHIBITOR,"Premier HPC/data-intensive computing center since the 1980s; booth features SGX3, CloudBank, and systems like Expanse and Voyager."
+Sustainable Horizons Institute,https://shinstitute.org/,,"PEARC EXHIBITOR, Communities & Mentorship","Builds inclusive communities in science/tech; supports students, faculty, and professionals in scientific computing."

@@ -1,0 +1,58 @@
+# Groundwork for Greatness speaker bios.
+# Rendered by speakers.html at Jekyll build time.
+
+- name: "Dr. Elijah A. MacCarthy"
+  title: "HPC Engineer"
+  photo: "/assets/speakers/ElijahAMaccarthy.jpeg"
+  affiliations:
+    - name: "Oak Ridge National Laboratory"
+      url: "https://www.ornl.gov"
+      icon: "/assets/favicons/ornl.svg"
+  session: "Monday, July 27 · 8:00–8:45 AM"
+  linkedin: "https://www.linkedin.com/in/elijah-maccarthy-6176b293/"
+  email: "maccarthyea@ornl.gov"
+  bio: |
+    Dr. Elijah A. MacCarthy is an HPC Engineer in the Systems Acceptance and User Environment group at the National Center for Computational Sciences at Oak Ridge National Laboratory, where he supports system acceptance, user environments, and application readiness for leadership-class supercomputing systems at the Oak Ridge Leadership Computing Facility. His technical interests include software containers, GPU programming, program optimization, and scalable workflows that enable scientists to leverage cutting-edge architectures for large-scale simulation and data analysis.
+
+    Dr. MacCarthy holds a Ph.D. in Computational Science and Engineering from North Carolina A&T State University, where his research included GPU-accelerated methods and computational modeling, including infectious disease dynamics and biomolecular applications. He is also active in HPC education and workforce initiatives, including crash courses and faculty-focused training events.
+
+- name: "Boyd Wilson"
+  title: "CEO, Omnibond Systems · Co-Founder, Abundant Frontier Institute"
+  photo: "/assets/speakers/boyd_w.jpeg"
+  affiliations:
+    - name: "Omnibond Systems"
+      url: "https://omnibond.com"
+      icon: "/assets/favicons/omnibond.svg"
+    - name: "Abundant Frontier Institute"
+      url: "https://abundantfrontier.org"
+      emoji: "🌾"
+  session: "Tuesday, July 28 · 8:00–8:45 AM"
+  linkedin: "https://www.linkedin.com/in/boydwilson/"
+  email: "boyd@omnibond.com"
+  bio: |
+    Boyd Wilson is CEO and CTO of Omnibond, a technology company specializing in high-performance computing, storage, identity management, and applied AI. Over nearly two decades at Omnibond, he has guided the company's growth across four core areas: identity and access management, including passwordless authentication through OmniPasskey; OrangeFS, an open-source parallel storage system for high-performance computing and big data; TrafficVision, a real-time computer vision platform for transportation analytics, where Wilson also serves as CEO; and projectEureka.ai, an integrated platform unifying AI, HPC, and Kubernetes for research and enterprise computing environments.
+
+    Prior to Omnibond, Wilson spent fourteen years at Clemson University, where he progressed from commercial software development to Executive Director over Computing, Systems and Operations, overseeing data center facilities, storage, virtualization, and software development for the university. He concluded his tenure at Clemson as Software CTO, shaping the institution's strategic technology direction. Earlier in his career, he directed computing for the School of Engineering at Miami University and worked in network and systems engineering at OCD Network Systems.
+
+    Wilson serves on the board of the Abundant Frontier Institute, a Washington State nonprofit dedicated to democratizing access to advanced technology skills. The Institute partners with under-resourced institutions — including HBCUs, TCUs, MSIs, and community colleges — to train faculty and staff to build AI models and agents themselves, so they can lead their own students through the coming technological shift with confidence. For Wilson, this is where his vision comes into sharpest focus: he believes the surest way to change the world with AI isn't to hand people finished tools, but to teach the teachers. Equip faculty to "Build AI" themselves, and that capability multiplies outward — through every classroom, every discipline, every student they reach.
+
+    Wilson holds a BS in Computer Science from Miami University. His work centers on modernizing computing infrastructure to support emerging AI and HPC workloads, with a particular focus on extending the value of existing systems rather than replacing them outright — and on ensuring the skills to build with that infrastructure are broadly, not narrowly, held.
+
+- name: "Dr. Alfred Watkins"
+  title: "Interim Senior Director"
+  photo: "/assets/speakers/Al_Watkins.png"
+  affiliations:
+    - name: "Atlanta University Center (AUC) Data Science Initiative"
+      url: "https://datascience.aucenter.edu"
+      icon: "/assets/favicons/auc.svg"
+  session: "Wednesday, July 29 · 8:00–8:30 AM"
+  linkedin: "https://www.linkedin.com/in/alfred-watkins-85890b5/"
+  email: "awatkins@aucenter.edu"
+  bio: |
+    Alfred R. Watkins serves as the Interim Senior Director of the Atlanta University Center (AUC) Data Science Initiative, an organization dedicated to expanding the curriculum, research, and impact of data science across the AUC Consortium member institutions, specifically Clark Atlanta University, Morehouse College, Morehouse School of Medicine, and Spelman College.
+
+    He began his career in the telecommunications and information technology industries at Bell Labs. He has also been a quality management consultant with AT&T, helping organizations improve their business processes and co-authoring two books on Process Quality Management and Improvement.
+
+    He is a passionate educator specializing in entrepreneurship, leadership and computer science education. He has taught a variety of computer science courses and conducted research at Morehouse College, Spelman College and Georgia Tech in high performance computing and database management. He has led the establishment of a Data Science & Analytics Minor Program at Morehouse College. The Data and the African Diaspora, Data Science I, AI in Sports, AI in FinTech, and the Explorations in Game Development courses were developed and launched at Morehouse under his leadership.
+
+    Dr. Watkins earned his Ph.D. degree in Computer Science from Georgia Institute of Technology in Atlanta, Georgia. He earned his Master of Science degree in Computer Science from Howard University in Washington D.C., his Bachelor of Electrical Engineering degree from Georgia Institute of Technology in Atlanta, Georgia, and his Bachelor of Computer Science from Morehouse College in Atlanta, Georgia.

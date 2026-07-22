@@ -60,17 +60,6 @@ layout: null
     overflow: visible;
   }
 
-  .pill {
-    white-space: nowrap;
-    scroll-snap-align: start;
-  }
-  .pill-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: #CBD5E1 transparent;
-  }
-  .pill-scroll::-webkit-scrollbar { height: 6px; }
-  .pill-scroll::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 9999px; }
-
   @keyframes pulse-dot {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.35; }
@@ -152,7 +141,7 @@ layout: null
   </div>
 
   <!-- Tabs -->
-  <nav class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-4 text-sm font-semibold uppercase tracking-wide" role="tablist">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-4 text-sm font-semibold tracking-wide" role="tablist">
     <button data-tab="directory" role="tab" aria-selected="true" class="tab-btn relative py-3 text-pearc-navy border-b-2 border-pearc-orange">
       Resource Directory
     </button>
@@ -160,6 +149,10 @@ layout: null
     <button data-tab="mentors" role="tab" aria-selected="false" class="tab-btn relative py-3 text-slate-400 hover:text-pearc-blue border-b-2 border-transparent">
       Connected Mentors
     </button>
+    <span class="text-pearc-orange">|</span>
+    <a href="{{ '/speakers.html' | relative_url }}" class="relative py-3 text-slate-400 hover:text-pearc-blue border-b-2 border-transparent transition">
+      Groundwork for Greatness
+    </a>
   </nav>
 </header>
 
@@ -168,17 +161,43 @@ layout: null
   <!-- ============ TAB A: RESOURCE DIRECTORY ============ -->
   <section id="tab-directory" class="tab-panel">
 
-    <!-- Search -->
-    <div class="relative mb-5">
-      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.35-5.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
-      </svg>
-      <input id="search-input" type="text" placeholder="Search resources by title, category, or description…"
-        class="w-full bg-white border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg pl-11 pr-4 py-3 text-sm text-slate-700 placeholder-slate-400 outline-none transition shadow-sm" />
+    <!-- Search + Major/Category filters -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-5">
+      <div class="relative flex-1">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.35-5.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+        </svg>
+        <input id="search-input" type="text" placeholder="Search resources by title, category, or description…"
+          class="w-full bg-white border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg pl-11 pr-4 py-3 text-sm text-slate-700 placeholder-slate-400 outline-none transition shadow-sm" />
+      </div>
+      <div class="sm:w-64 shrink-0 relative">
+        <button type="button" data-multiselect-toggle="category"
+          class="w-full bg-white border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-4 py-3 text-sm text-slate-600 outline-none transition shadow-sm flex items-center justify-between gap-2">
+          <span data-multiselect-label="category" class="truncate text-left">Filter by category…</span>
+          <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div data-multiselect-panel="category" class="hidden absolute left-0 right-0 z-30 mt-1 max-h-72 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg p-2"></div>
+      </div>
+      <div class="sm:w-64 shrink-0 relative">
+        <button type="button" data-multiselect-toggle="major"
+          class="w-full bg-white border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-4 py-3 text-sm text-slate-600 outline-none transition shadow-sm flex items-center justify-between gap-2">
+          <span data-multiselect-label="major" class="truncate text-left">Filter by major…</span>
+          <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div data-multiselect-panel="major" class="hidden absolute left-0 right-0 z-30 mt-1 max-h-72 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg p-2"></div>
+      </div>
+      <div class="sm:w-56 shrink-0">
+        <select id="sort-filter"
+          class="w-full bg-white border border-slate-300 focus:border-pearc-blue focus:ring-2 focus:ring-pearc-blue/20 rounded-lg px-4 py-3 text-sm text-slate-600 outline-none transition shadow-sm">
+          <option value="name">Sort: Name (A–Z)</option>
+          <option value="category">Sort: Category (A–Z)</option>
+        </select>
+      </div>
     </div>
-
-    <!-- Category pills -->
-    <div id="category-pills" class="pill-scroll flex gap-2 overflow-x-auto pb-4 mb-4 border-b border-slate-200"></div>
 
     <!-- Result count -->
     <p id="results-summary" class="text-xs text-slate-400 mb-4"></p>
@@ -187,7 +206,7 @@ layout: null
     <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
 
     <p id="empty-state" class="hidden text-center text-slate-400 py-16">
-      No resources match your search. Try a different keyword or category.
+      No resources match your search. Try a different keyword, category, or major.
     </p>
   </section>
 
@@ -335,10 +354,71 @@ layout: null
 
   const GITHUB_REPO = 'HackHPC/hpcresources-pearc26';
 
+  // Maps broader student fields of study to the resources most relevant to
+  // them, curated from the PEARC26 HPC Resources list. Resource names must
+  // match the "Name" column in _data/PEARC26-HPCResourceList-FullList.csv.
+  const MAJOR_RESOURCE_MAP = {
+    'Computer Science and Software Engineering': [
+      'ACM', 'IEEE Computer Society', 'US-RSE (Research Software Engineering Association)',
+      'Google Summer of Code (GSoC)', 'Jupyter', 'Apptainer', 'NCSA Learn',
+    ],
+    'Cybersecurity, IT, Networking, and Cloud': [
+      'ACCESS Cyberinfrastructure', 'ACCESS Campus Champions', 'Open HPC',
+      'NRP (National Research Platform)', 'Cloudbank ACCESS', 'ACCESS Allocations',
+    ],
+    'Computer Engineering and Electrical Engineering': [
+      'IEEE Computer Society', 'IEEE IPDPS (International Parallel and Distributed Processing Symposium)',
+      'IEEE Cluster Computing', 'ACCESS Cyberinfrastructure', 'Anvil Supercomputer', 'Open HPC',
+    ],
+    'Data Science, AI, Statistics, and Analytics': [
+      'Black in AI', 'Google AI Professional Certificate', 'NAIRR Pilot Portal',
+      'Jupyter', 'marimo', 'NRP (National Research Platform)', 'NCAR Internships',
+    ],
+    'Computational, Mathematical, and Physical Sciences': [
+      'DOE CSGF', 'SIAM CSI (Computing in Science and Engineering)',
+      'SIAM PP (Parallel Processing for Scientific Computing)',
+      'HSF Training - Singularity Container Training', 'NASA SEED', 'ACCESS Workshops',
+    ],
+    'Biology, Biomedical, and Health Sciences': [
+      'NSF REU Sites', 'NSF REU Search Tool', 'PathwaysToScience.org',
+      'ACCESS Cyberinfrastructure', 'Jupyter', 'SGCI / SGX3 (Science Gateways Community Institute)',
+    ],
+    'Agriculture, Environmental, and Life Sciences': [
+      'NCAR Internships', 'NCAR Explorer Series', 'NCAR PI-WRF Teaching Box',
+      'ACCESS Cyberinfrastructure', 'Anvil Supercomputer', 'NSF REU Search Tool',
+    ],
+    'Geography, Planning, and Public Safety': [
+      'Jupyter', 'marimo', 'ACCESS Cyberinfrastructure', 'NRP (National Research Platform)',
+      'NCAR Explorer Series', 'PEARC (Practical and Extreme Computing Conference)',
+    ],
+    'Business, Communication, Humanities, and Social Sciences': [
+      'CaRCC HR Job Family Matrix', 'ACCESS Careers', 'PathwaysToScience.org',
+      'PEARC (Practical and Extreme Computing Conference)', 'HPCWire', 'Q-Ready Program',
+    ],
+    'General / Other': [
+      'Women in HPC (WHPC)', 'CaRCC (Coalition for Academic Scientific Computation)',
+      'ACCESS Campus Champions', 'MS-CC (Minority Serving Institutions Cyberinfrastructure Consortium)',
+      'NSBE (National Society of Black Engineers)',
+      'SACNAS (Society for Advancement of Chicanos/Hispanics and Native Americans in Science)',
+      'SHPE (Society of Hispanic Professional Engineers)',
+    ],
+  };
+
+  // Reverse index: resource title -> set of majors it's relevant to.
+  const RESOURCE_MAJORS = {};
+  Object.entries(MAJOR_RESOURCE_MAP).forEach(([major, titles]) => {
+    titles.forEach(title => {
+      if (!RESOURCE_MAJORS[title]) RESOURCE_MAJORS[title] = [];
+      RESOURCE_MAJORS[title].push(major);
+    });
+  });
+
   const state = {
     resources: [],
     categories: [],
-    activeCategory: 'All',
+    activeCategories: [],
+    activeMajors: [],
+    sortBy: 'name',
     searchTerm: '',
     mentors: [],
   };
@@ -505,19 +585,27 @@ layout: null
 
       state.resources = rows
         .filter(row => row.Name && row.Name.trim())
-        .map(row => ({
-          title: (row.Name || '').trim(),
-          category: (row.Category || 'Uncategorized').trim() || 'Uncategorized',
-          description: (row.Description || '').trim(),
-          url: normalizeUrl((row.URL || '').trim()),
-          contact: (row['Contact Person'] || '').trim(),
-        }));
+        .map(row => {
+          const title = (row.Name || '').trim();
+          return {
+            title,
+            categories: (row.Category || '').split(',').map(c => c.trim()).filter(Boolean).length
+              ? (row.Category || '').split(',').map(c => c.trim()).filter(Boolean)
+              : ['Uncategorized'],
+            description: (row.Description || '').trim(),
+            url: normalizeUrl((row.URL || '').trim()),
+            contact: (row['Contact Person'] || '').trim(),
+            majors: RESOURCE_MAJORS[title] || [],
+          };
+        })
+        .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
 
-      state.categories = Array.from(new Set(state.resources.map(r => r.category))).sort();
+      state.categories = Array.from(new Set(state.resources.flatMap(r => r.categories))).sort();
 
       document.getElementById('resource-count').textContent = state.resources.length;
 
-      renderCategoryPills();
+      updateMultiSelectLabel('category');
+      updateMultiSelectLabel('major');
       renderResources();
       populateSuggestCategoryList();
       handleHashScroll();
@@ -528,43 +616,157 @@ layout: null
     }
   }
 
-  // ---------- Rendering: Category pills ----------
+  // ---------- Multi-select filter dropdowns (category & major) ----------
 
-  function renderCategoryPills() {
-    const container = document.getElementById('category-pills');
-    const cats = ['All', ...state.categories];
-    container.innerHTML = cats.map(cat => {
-      const active = cat === state.activeCategory;
-      const base = 'pill px-4 py-1.5 rounded-full text-xs font-semibold border transition shrink-0';
-      const activeClasses = active
-        ? 'bg-pearc-orange text-white border-transparent'
-        : 'bg-white text-slate-500 border-slate-300 hover:border-pearc-blue hover:text-pearc-blue';
-      return `<button type="button" data-category="${escapeHtml(cat)}" class="${base} ${activeClasses}">${escapeHtml(cat)}</button>`;
+  const MULTISELECT_CONFIGS = {
+    category: {
+      getOptions: () => state.categories,
+      getSelected: () => state.activeCategories,
+      setSelected: (vals) => { state.activeCategories = vals; },
+      placeholder: 'Filter by category…',
+    },
+    major: {
+      getOptions: () => Object.keys(MAJOR_RESOURCE_MAP),
+      getSelected: () => state.activeMajors,
+      setSelected: (vals) => { state.activeMajors = vals; },
+      placeholder: 'Filter by major…',
+    },
+  };
+
+  function renderMultiSelectPanel(key) {
+    const cfg = MULTISELECT_CONFIGS[key];
+    const panel = document.querySelector(`[data-multiselect-panel="${key}"]`);
+    const options = cfg.getOptions();
+    const selected = cfg.getSelected();
+
+    const clearBtn = `<button type="button" data-multiselect-clear="${key}"
+        class="w-full text-left px-2 py-1.5 mb-1 text-xs font-semibold text-pearc-orange hover:text-pearc-orange-dark border-b border-slate-100 ${selected.length ? '' : 'hidden'}">
+        Clear selection
+      </button>`;
+
+    const items = options.map(opt => {
+      const checked = selected.includes(opt) ? 'checked' : '';
+      const displayOpt = opt === EXHIBITOR_CATEGORY ? `🎪 ${opt}` : opt;
+      return `<label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-sm text-slate-600">
+          <input type="checkbox" data-multiselect-option="${key}" value="${escapeHtml(opt)}" ${checked}
+            class="rounded border-slate-300 text-pearc-orange focus:ring-pearc-orange/50">
+          <span>${escapeHtml(displayOpt)}</span>
+        </label>`;
     }).join('');
 
-    container.querySelectorAll('[data-category]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.activeCategory = btn.getAttribute('data-category');
-        renderCategoryPills();
-        renderResources();
-      });
+    panel.innerHTML = clearBtn + items;
+  }
+
+  function updateMultiSelectLabel(key) {
+    const cfg = MULTISELECT_CONFIGS[key];
+    const label = document.querySelector(`[data-multiselect-label="${key}"]`);
+    const selected = cfg.getSelected();
+    if (selected.length === 0) label.textContent = cfg.placeholder;
+    else if (selected.length === 1) label.textContent = selected[0];
+    else label.textContent = `${selected.length} selected`;
+  }
+
+  function closeMultiSelectPanels(exceptKey) {
+    document.querySelectorAll('[data-multiselect-panel]').forEach(panel => {
+      if (panel.getAttribute('data-multiselect-panel') !== exceptKey) panel.classList.add('hidden');
     });
+  }
+
+  function setupMultiSelects() {
+    document.addEventListener('click', (e) => {
+      const toggleBtn = e.target.closest('[data-multiselect-toggle]');
+      if (toggleBtn) {
+        const key = toggleBtn.getAttribute('data-multiselect-toggle');
+        const panel = document.querySelector(`[data-multiselect-panel="${key}"]`);
+        const wasHidden = panel.classList.contains('hidden');
+        closeMultiSelectPanels(null);
+        if (wasHidden) {
+          renderMultiSelectPanel(key);
+          panel.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const clearBtn = e.target.closest('[data-multiselect-clear]');
+      if (clearBtn) {
+        const key = clearBtn.getAttribute('data-multiselect-clear');
+        MULTISELECT_CONFIGS[key].setSelected([]);
+        renderMultiSelectPanel(key);
+        updateMultiSelectLabel(key);
+        renderResources();
+        return;
+      }
+
+      if (!e.target.closest('[data-multiselect-panel]')) {
+        closeMultiSelectPanels(null);
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      const checkbox = e.target.closest('[data-multiselect-option]');
+      if (!checkbox) return;
+      const key = checkbox.getAttribute('data-multiselect-option');
+      const cfg = MULTISELECT_CONFIGS[key];
+      const selected = new Set(cfg.getSelected());
+      if (checkbox.checked) selected.add(checkbox.value); else selected.delete(checkbox.value);
+      cfg.setSelected(Array.from(selected));
+
+      const panel = document.querySelector(`[data-multiselect-panel="${key}"]`);
+      const clearBtn = panel.querySelector(`[data-multiselect-clear="${key}"]`);
+      clearBtn.classList.toggle('hidden', cfg.getSelected().length === 0);
+
+      updateMultiSelectLabel(key);
+      renderResources();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMultiSelectPanels(null);
+    });
+
+    Object.keys(MULTISELECT_CONFIGS).forEach(key => updateMultiSelectLabel(key));
+  }
+
+  // ---------- Rendering: Sort dropdown ----------
+
+  function setupSortFilter() {
+    const select = document.getElementById('sort-filter');
+    select.value = state.sortBy;
+    select.addEventListener('change', () => {
+      state.sortBy = select.value;
+      renderResources();
+    });
+  }
+
+  function sortResources(list) {
+    const sorted = list.slice();
+    if (state.sortBy === 'category') {
+      sorted.sort((a, b) => {
+        const catCompare = a.categories[0].localeCompare(b.categories[0], undefined, { sensitivity: 'base' });
+        return catCompare !== 0 ? catCompare : a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+      });
+    } else {
+      sorted.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+    }
+    return sorted;
   }
 
   // ---------- Rendering: Resource cards ----------
 
   function filteredResources() {
     const term = state.searchTerm.toLowerCase().trim();
-    return state.resources.filter(r => {
-      const matchesCategory = state.activeCategory === 'All' || r.category === state.activeCategory;
+    const list = state.resources.filter(r => {
+      const matchesCategory = state.activeCategories.length === 0 || r.categories.some(c => state.activeCategories.includes(c));
       if (!matchesCategory) return false;
+      const matchesMajor = state.activeMajors.length === 0 || r.majors.some(m => state.activeMajors.includes(m));
+      if (!matchesMajor) return false;
       if (!term) return true;
       return (
         r.title.toLowerCase().includes(term) ||
-        r.category.toLowerCase().includes(term) ||
+        r.categories.some(c => c.toLowerCase().includes(term)) ||
         r.description.toLowerCase().includes(term)
       );
     });
+    return sortResources(list);
   }
 
   function renderResources() {
@@ -585,13 +787,31 @@ layout: null
     grid.innerHTML = list.map(cardTemplate).join('');
   }
 
+  const EXHIBITOR_CATEGORY = 'PEARC EXHIBITOR';
+
+  function categoryBadgeClasses(category) {
+    return category === EXHIBITOR_CATEGORY
+      ? 'text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 border-transparent shadow-sm'
+      : 'text-pearc-blue-dark bg-blue-50 border-blue-200';
+  }
+
+  function categoryBadge(category) {
+    const isExhibitor = category === EXHIBITOR_CATEGORY;
+    return `<span class="text-[11px] uppercase tracking-wide font-semibold rounded px-2.5 py-1 shrink-0 border ${categoryBadgeClasses(category)}">
+        ${isExhibitor ? '🎪 ' : ''}${escapeHtml(category)}
+      </span>`;
+  }
+
   function cardTemplate(resource) {
     const slug = slugify(resource.title);
     const hasContact = Boolean(resource.contact);
     const hasUrl = Boolean(resource.url);
+    const isExhibitor = resource.categories.includes(EXHIBITOR_CATEGORY);
 
     const borderClasses = hasContact
       ? 'border-l-4 border-l-pearc-orange border-t border-r border-b border-slate-200'
+      : isExhibitor
+      ? 'border-l-4 border-l-violet-500 border-t border-r border-b border-slate-200'
       : 'border border-slate-200';
 
     let contactHtml = '';
@@ -622,9 +842,9 @@ layout: null
         class="group relative rounded-xl bg-white shadow-sm p-5 flex flex-col justify-between hover:shadow-md hover:border-pearc-blue/50 transition ${borderClasses}">
         <div>
           <div class="flex items-start justify-between gap-2 mb-2">
-            <span class="text-[11px] uppercase tracking-wide font-semibold text-pearc-blue-dark bg-blue-50 border border-blue-200 rounded px-2.5 py-1 shrink-0">
-              ${escapeHtml(resource.category)}
-            </span>
+            <div class="flex flex-wrap gap-1.5">
+              ${resource.categories.map(categoryBadge).join('')}
+            </div>
             <div class="relative shrink-0">
               <button type="button" data-share-toggle="${slug}" data-share-title="${escapeHtml(resource.title)}" title="Share this resource"
                 class="text-[11px] font-medium text-slate-400 hover:text-pearc-orange transition flex items-center gap-1">
@@ -883,6 +1103,8 @@ layout: null
   document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     setupSearch();
+    setupMultiSelects();
+    setupSortFilter();
     setupSharing();
     setupContactLinks();
     setupMentorForm();

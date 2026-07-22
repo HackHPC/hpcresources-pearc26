@@ -1,0 +1,196 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork for Greatness Speaker Bios · {{ site.title }}</title>
+<meta name="description" content="Speaker bios for the Groundwork for Greatness series at ACM PEARC26.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎤</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+        colors: {
+          pearc: {
+            orange: '#E8622C',
+            'orange-dark': '#C94F1F',
+            blue: '#4F7DA0',
+            'blue-dark': '#3D6483',
+            navy: '#263543',
+          }
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background-color: #F8FAFC; }
+
+  .brand-bar {
+    background-image: linear-gradient(90deg, #4F7DA0, #E8622C);
+  }
+
+  .bio p + p { margin-top: 0.85em; }
+
+  ::selection { background: rgba(232,98,44,0.2); }
+</style>
+</head>
+
+<body class="bg-slate-50 text-slate-700 font-sans min-h-screen">
+
+<!-- Brand stripe -->
+<div class="h-1 w-full brand-bar"></div>
+
+<!-- Header -->
+<header class="bg-white border-b border-slate-200 shadow-sm">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <a href="{{ '/' | relative_url }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-pearc-orange transition mb-4">
+      ← Back to Resource Directory
+    </a>
+    <span class="text-[11px] font-semibold tracking-[0.25em] text-slate-400 uppercase">ACM PEARC26 · Student Program</span>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight text-pearc-navy">
+      Groundwork for Greatness <span class="text-pearc-orange">Speaker Bios</span>
+    </h1>
+    <div class="h-[3px] w-28 brand-bar rounded-full mt-1.5 mb-2"></div>
+    <p class="text-sm text-slate-500 max-w-2xl">
+      Morning speaker series featuring HPC and AI leaders from national labs, industry, and academia.
+    </p>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+  <div id="speaker-list" class="space-y-6"></div>
+</main>
+
+<footer class="border-t border-slate-200 bg-white">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p class="text-xs text-slate-400">© 2026 HackHPC · Open source directory for the ACM PEARC26 Student Program</p>
+    <div class="flex items-center gap-4 text-xs">
+      <a href="{{ '/' | relative_url }}" class="text-pearc-orange font-semibold hover:text-pearc-orange-dark">Resource Directory</a>
+      <a href="https://pearc.acm.org/pearc26/" target="_blank" rel="noopener noreferrer" class="text-pearc-blue font-semibold hover:text-pearc-blue-dark">ACM PEARC26 ↗</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Speaker data, parsed from _data/speakers.yml at Jekyll build time -->
+<script id="speaker-data" type="application/json">{{ site.data.speakers | jsonify | replace: "</", "<\/" }}</script>
+
+<script>
+(function () {
+  'use strict';
+
+  var SITE_BASEURL = "{{ site.baseurl }}";
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function initials(name) {
+    return String(name || '')
+      .replace(/^Dr\.?\s+/i, '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0].toUpperCase())
+      .join('');
+  }
+
+  function affiliationMark(a) {
+    if (a.icon) return `<img src="${escapeHtml(SITE_BASEURL + a.icon)}" alt="" class="inline-block w-3.5 h-3.5 align-[-2px] mr-1">`;
+    if (a.emoji) return `<span class="mr-1" aria-hidden="true">${escapeHtml(a.emoji)}</span>`;
+    return '';
+  }
+
+  function affiliationsHtml(affiliations) {
+    return (affiliations || [])
+      .map(a => {
+        const label = affiliationMark(a) + escapeHtml(a.name);
+        return a.url
+          ? `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center hover:text-pearc-orange transition">${label}</a>`
+          : `<span class="inline-flex items-center">${label}</span>`;
+      })
+      .join(' <span class="mx-1">·</span> ');
+  }
+
+  function bioParagraphs(bio) {
+    return String(bio || '')
+      .split(/\n\s*\n/)
+      .map(p => p.trim())
+      .filter(Boolean)
+      .map(p => `<p>${escapeHtml(p)}</p>`)
+      .join('');
+  }
+
+  function speakerCard(speaker) {
+    return `
+      <article class="rounded-xl bg-white border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-start gap-5">
+          <div class="shrink-0 w-16 h-16 rounded-full brand-bar flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+            ${speaker.photo
+              ? `<img src="${escapeHtml(SITE_BASEURL + speaker.photo)}" alt="${escapeHtml(speaker.name)}" class="w-full h-full object-cover">`
+              : escapeHtml(initials(speaker.name))}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h2 class="text-lg font-bold text-pearc-navy">${escapeHtml(speaker.name)}</h2>
+              <span class="text-xs font-semibold text-pearc-blue-dark bg-blue-50 border border-blue-200 rounded-full px-2.5 py-1 whitespace-nowrap">
+                ${escapeHtml(speaker.session)}
+              </span>
+            </div>
+            <p class="text-sm text-slate-600 font-medium mt-0.5">${escapeHtml(speaker.title)}</p>
+            <p class="text-xs text-slate-400 mb-4">${affiliationsHtml(speaker.affiliations)}</p>
+
+            <div class="flex items-center gap-4 mb-5">
+              ${speaker.linkedin ? `<a href="${escapeHtml(speaker.linkedin)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-orange hover:text-pearc-orange-dark transition">Connect on LinkedIn ↗</a>` : ''}
+              ${speaker.email ? `<a href="mailto:${escapeHtml(speaker.email)}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-pearc-blue hover:text-pearc-blue-dark transition">✉️ ${escapeHtml(speaker.email)}</a>` : ''}
+            </div>
+
+            <div class="bio text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+              ${bioParagraphs(speaker.bio)}
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function render() {
+    const list = document.getElementById('speaker-list');
+    try {
+      const raw = document.getElementById('speaker-data').textContent;
+      const speakers = JSON.parse(raw || '[]');
+      list.innerHTML = speakers.map(speakerCard).join('');
+    } catch (err) {
+      console.error('Failed to load speaker data:', err);
+      list.innerHTML = '<p class="text-center text-slate-400 py-16">Could not load speaker data.</p>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', render);
+})();
+</script>
+
+</body>
+</html>
