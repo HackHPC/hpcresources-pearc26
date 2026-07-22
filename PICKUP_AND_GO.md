@@ -11,7 +11,7 @@ Student Program**, built by HackHPC. It's a GitHub Pages site: push to
 `main`, GitHub builds and deploys it automatically, no CI config needed.
 
 There is exactly **one page**, `index.html` — everything lives there as
-three client-side tabs, toggled with no page reload or URL change:
+four client-side tabs, toggled with no page reload or URL change:
 
 - **Resource Directory** (`#tab-directory`) — searchable/filterable
   directory of HPC communities, funding, training, conferences, and career
@@ -19,6 +19,16 @@ three client-side tabs, toggled with no page reload or URL change:
 - **Connected Mentors** (`#tab-mentors`) — mentor roster + signup form.
 - **Groundwork for Greatness** (`#tab-speakers`) — speaker bios for the
   morning speaker series.
+- **FAQ** (`#tab-faq`) — static `<details>/<summary>` accordion explaining
+  how to use every feature on the page (search, filters, sort, badges,
+  single/multi-resource sharing, suggesting a resource, mentors, speakers).
+  No JS needed for the accordion itself — `<details>` is a native HTML
+  element. It embeds four screenshots (see `assets/screenshots/` below).
+  This is documentation *for site visitors*, not for future Claude
+  sessions — don't confuse it with this file. It also ends with a "Still
+  Need Help?" support-question form (`#support-form`) that follows the
+  exact same GitHub-Issue-on-submit pattern as "Suggest a Resource" — see
+  the bullet on that pattern further down.
 
 There used to be a second standalone page, `speakers.html`, for the speaker
 bios — it was merged into `index.html` as a third tab (to match how
@@ -67,9 +77,49 @@ assets/
   favicons/                                  SVG-wrapped org favicons for speaker affiliations (see below)
   favicons/resources/                        SVG-wrapped favicons for resource cards, one per resource (see below)
   speakers/                                  Speaker headshot photos, referenced by speakers.yml `photo`
-index.html                                   The entire site: layout + styles + JS + all three tabs
+  screenshots/                               PNG screenshots embedded in the FAQ tab (see below)
+  og-image.png                               Social share preview image (see "SEO / social sharing" below)
+index.html                                   The entire site: layout + styles + JS + all four tabs
 README.md                                    Human-facing project README (may lag behind this file — check both)
 ```
+
+## SEO / social sharing
+
+`index.html`'s `<head>` has canonical/Open Graph/Twitter Card meta tags
+(added 2026-07-22) built from `site.title` / `site.description` /
+`site.url` / `site.baseurl` in `_config.yml` — **to change the title or
+description that appears in search results or link previews, edit
+`_config.yml`, not the meta tags themselves.** The tags are just templated
+off those two values plus a hardcoded `assets/og-image.png` reference; there's
+nothing tab-specific or per-resource here, it's one static preview for the
+whole site.
+
+- **`assets/og-image.png`** (1200×630, the standard OG/Twitter "large image"
+  size) is what renders when the site's link is shared on Slack, iMessage,
+  X, LinkedIn, Discord, etc. It's a **static PNG, not generated at build
+  time** — it was authored as a one-off standalone HTML file (brand-color
+  gradient background, the site's actual header copy, a large low-opacity
+  🖥️ emoji as a background graphic) and captured with headless Chrome at
+  exactly `--window-size=1200,630` / `deviceScaleFactor: 1` so the output
+  PNG is pixel-exact, not scaled. The source HTML template wasn't kept in
+  the repo (it's throwaway, like the FAQ screenshot captures) — if the
+  branding, title, or tagline changes enough to need a new image, rebuild a
+  similar standalone HTML page matching the current header/colors rather
+  than editing the PNG directly, then recapture and overwrite
+  `assets/og-image.png` in place (same filename, so the meta tags don't
+  need touching).
+- **`og:image`/`twitter:image` use absolute URLs** (`{{ site.url }}{{
+  site.baseurl }}/assets/og-image.png`) — relative paths don't reliably work
+  for these tags across platforms, unlike the favicon/screenshot `<img>`
+  tags elsewhere on the page which do use `{{ site.baseurl }}`-relative
+  paths.
+- There's no automated way to verify how a link preview actually renders on
+  a given platform (Slack/X/LinkedIn/etc. each cache and crop differently)
+  short of actually posting the link somewhere or using that platform's own
+  debugger tool — what was verified here is that the tags render with
+  correct, absolute, resolved values after `jekyll build`, that the image
+  file lands in `_site/assets/` at the expected path, and that it's exactly
+  1200×630. That's the limit of what's checkable without external services.
 
 ## Data file schemas
 
@@ -117,6 +167,46 @@ category value unless a new one is genuinely warranted), `Description`
     whenever their description says they directly provide computing/
     storage/network infrastructure — this was a conscious scope call, not
     scope creep, so don't narrow it back down without asking first.
+  - **`Name` prefers `Full Expansion (ACRONYM)` when the acronym IS the
+    whole resource** — e.g. `Abundant Frontier Institute (AFI)`,
+    `Association for Computing Machinery (ACM)`,
+    `Campus Research Computing Consortium (CaRCC)`. A full audit (session of
+    2026-07-22) found and fixed 7 resources that were bare, unexpanded
+    acronyms with **no** parenthetical at all (`ACM`, `AWS`, `DDN`, `NCSA`,
+    `CASC`, `PNNL`, `SDSC`) — each was confirmed against the org's own site
+    (not guessed) before renaming, and **the matching favicon SVG file was
+    renamed to the new slug** in the same pass, since
+    `assets/favicons/resources/<slug>.svg` is derived from the current
+    `Name`, not stored separately (see the favicon bullet below) — renaming
+    a `Name` without renaming its favicon file silently drops the icon. One
+    acronym (`CIQ`) was deliberately left un-expanded because no source
+    (their own site, Wikipedia) confirmed what it stands for — don't guess
+    at an acronym expansion from general/half-remembered knowledge; if a
+    source can't confirm it, leave it alone and say so.
+  - **A pre-existing data error was also caught and fixed in that audit**:
+    `CaRCC`'s row had **CASC's** real name attached to it
+    (`"Coalition for Academic Scientific Computation"` is casc.org's actual
+    name, confirmed directly on their site) — CaRCC's real name (confirmed
+    on carcc.org) is `Campus Research Computing Consortium`. Also fixed:
+    `HPDC`'s parenthetical was missing "and Distributed" (confirmed via
+    hpdc.sci.utah.edu). Both were factual corrections, not renames-for-
+    style — if you spot another mismatched acronym expansion, verify against
+    the org's own site before touching it, and treat it as a correction
+    worth calling out, not a silent fix.
+  - **Acronyms that are a *prefix* to a longer name** (e.g. `ACCESS Campus
+    Champions`, `NCAR Internships`, `NSF REU Sites`, `IEEE Cluster
+    Computing`, `TACC Analysis Portal (TAP)`, `PATh/Open Science Pool`,
+    `ISC High Performance`) were deliberately **left as-is in the `Name`
+    column** — expanding those in the name itself would make them
+    unwieldy and require synchronized edits to `MAJOR_RESOURCE_MAP` (see
+    below) for every renamed entry. Instead, the acronym gets expanded
+    inline in that resource's own `Description` the first time it wasn't
+    already explained there (e.g. "...from ACCESS (Advanced
+    Cyberinfrastructure Coordination Ecosystem: Services & Support)").
+    Don't re-expand an acronym in every row that merely mentions it in
+    passing (e.g. bare "NSF" inside an ACCESS-prefixed resource's
+    description) — only the acronym(s) that are actually part of that row's
+    own `Name` need expanding in that row.
 
 **`_data/mentors.csv`** — columns: `Name` (required), `Affiliation`,
 `Affiliation URL` (optional), `Role URL` (optional), `LinkedIn` (should be a
@@ -205,12 +295,27 @@ render `<p>` tags).
     SVG containing just a `<text>` element with the emoji glyph, saved at
     the same computed path. Ask the user which emoji if it's not obvious
     (don't invent branding for an org that has none).
-- **Three tabs** (`#tab-directory` / `#tab-mentors` / `#tab-speakers`),
-  toggled client-side by `activateTab()` — no page reload, no URL change.
-  `setupTabs()` wires every `.tab-btn` (matched by its `data-tab` attribute)
-  to `activateTab()`; if you ever add a fourth tab, add its button + panel
-  markup, then add one line to `activateTab()`'s hidden-class toggling — the
-  click wiring itself is already generic.
+- **Four tabs** (`#tab-directory` / `#tab-mentors` / `#tab-speakers` /
+  `#tab-faq`), toggled client-side by `activateTab()` — no page reload, no
+  URL change. `setupTabs()` wires every `.tab-btn` (matched by its
+  `data-tab` attribute) to `activateTab()`; if you ever add a fifth tab, add
+  its button + panel markup, then add one line to `activateTab()`'s
+  hidden-class toggling — the click wiring itself is already generic.
+- **The FAQ tab's screenshots are static PNGs, not live-rendered** — they
+  were captured once via headless Chrome + CDP (see the "Verifying
+  JS-driven UI changes" convention below) at `assets/screenshots/faq-*.png`
+  and referenced with plain `<img src="{{ site.baseurl }}/assets/
+  screenshots/...">` tags. If the UI they depict changes meaningfully
+  (filter panel layout, share menu, the multi-select modal, mentor cards),
+  **the screenshots go stale silently** — nothing will error, they'll just
+  show the old UI. Re-capture and overwrite the same filenames rather than
+  adding new ones. One gotcha hit while capturing the share-menu
+  screenshot: headless Chrome reports `navigator.share` as present, so a
+  plain click on the share toggle invokes the native share API instead of
+  opening the visible dropdown menu — override it first with
+  `Object.defineProperty(navigator, 'share', { value: undefined,
+  configurable: true })` (via `Page.addScriptToEvaluateOnNewDocument`
+  before navigating) to force the fallback menu open for the screenshot.
 - **Filtering is three independent, composable controls**, all client-side
   and all AND'd together (search AND category AND major):
   - **Search box** — matches title/category/description substrings.
@@ -251,6 +356,34 @@ render `<p>` tags).
   than inventing a new one.
 - **Share menu** per resource card (copy link / SMS / email / X / LinkedIn /
   Facebook, or the native OS share sheet if available).
+- **Icons instead of emoji for "share" and "LinkedIn"**: all three
+  share-related affordances (the per-card `data-share-toggle` button, the
+  "Share Multiple Resources" button, and the modal's Share button) use the
+  same inline square-and-arrow-up SVG (a plain path with
+  `stroke="currentColor"`, copy-pasted identically in all three spots rather
+  than factored into a shared template-string constant — if you touch one,
+  check the other two haven't drifted). Every "Connect on LinkedIn ↗" link
+  (mentor cards and speaker cards) similarly got an inline LinkedIn glyph SVG
+  with `fill="currentColor"` right before the text, so it always matches
+  that link's current text color (including its hover-darkened shade) —
+  don't hardcode LinkedIn's brand blue here, that was a deliberate choice to
+  match the site's orange/blue link styling instead.
+- **Mentor & speaker "Email" links**: both render just the word "Email" (not
+  the raw address) and both append
+  `?subject=${encodeURIComponent('[PEARC26 Student Program]')}` to the
+  `mailto:` href. This is deliberately **not** applied to the per-resource
+  card's Share→Email action (`runShareAction()`'s `'email'` case) — that one
+  keeps the resource's own title as the subject, since it identifies what's
+  being shared; don't unify the two without asking, that was an explicit
+  user decision.
+- **"Launch Opportunity" buttons were replaced with the resource's actual
+  URL as the link text** (still opens in a new tab, still has a trailing
+  `↗`, plus a `title` attribute with the full URL for a hover tooltip). The
+  anchor needs both `truncate` and `min-w-0` classes together to actually
+  ellipsis long URLs instead of overflowing the card — `truncate` alone
+  doesn't shrink within a flex parent unless `min-w-0` overrides the
+  default `min-width: auto` on the flex item. Verified this holds even for
+  the longest URL in the CSV at a 375px mobile width.
 - **Multi-resource selection & bulk share/export**: every resource card has a
   checkbox (`data-select-resource="<slug>"`) toggling membership in
   `state.selectedResources` (a `Set` of slugs, kept in JS state so it
@@ -279,10 +412,15 @@ render `<p>` tags).
   - All the CSV/Markdown/plain-text builder functions are scoped inside the
     same page-wide IIFE as everything else — they're not reachable from the
     browser console's top-level scope, which is expected, not a bug.
-- **"Suggest a Resource" modal** and **"Become a Connected Mentor" form**
-  don't hit a backend — they build a pre-filled GitHub Issue URL
-  (`github.com/HackHPC/hpcresources-pearc26/issues/new?...`) and open it in a
-  new tab. Maintainers triage issues and manually add entries to the CSVs.
+- **"Suggest a Resource" modal**, **"Become a Connected Mentor" form**, and
+  the **FAQ tab's support-question form** all follow the same no-backend
+  pattern: build a pre-filled GitHub Issue URL via the shared
+  `buildGithubIssueUrl(title, bodyLines, labels)` helper
+  (`github.com/HackHPC/hpcresources-pearc26/issues/new?...`) and open it in
+  a new tab. Maintainers triage issues manually — resource/mentor
+  submissions get added to the CSVs, support questions get answered/closed.
+  If a fourth "opens a GitHub issue" form is ever needed, reuse
+  `buildGithubIssueUrl()` rather than duplicating the URLSearchParams logic.
 
 ## Local dev — Ruby/Jekyll gotchas (read before touching the Gemfile)
 
