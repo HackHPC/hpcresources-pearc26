@@ -566,6 +566,44 @@ yet, like the `github-pages`/nokogiri case above).
 `Gemfile.lock` is gitignored on purpose — each machine regenerates its own,
 so don't commit it or treat a diff in it as meaningful.
 
+**A local `bundle exec jekyll build` succeeding does NOT guarantee the real
+GitHub Pages build will succeed** (hit for real on 2026-07-22, see incident
+below) — the two environments are not the same Jekyll:
+- Locally we run **our own pinned `jekyll 3.9.5`** with zero plugins (per
+  the Gemfile above).
+- The actual production Pages build (via the `actions/jekyll-build-pages`
+  GitHub Action) tries to `bundle install` **our** Gemfile first — and
+  since it lacks the `github-pages` meta-gem (removed above), that install
+  fails with "Bundler can't satisfy your Gemfile's dependencies." The
+  action then **silently falls back** to the full pre-installed
+  `github-pages` gem (a specific pinned version, e.g. v232 as of this
+  writing) with **jekyll 3.10.0 and a whole default plugin set**:
+  `jekyll-seo-tag`, `jekyll-github-metadata`, `jekyll-relative-links`,
+  `jekyll-optional-front-matter`, `jekyll-readme-index`,
+  `jekyll-default-layout`, `jekyll-titles-from-headings`,
+  `jekyll-commonmark-ghpages`, `jekyll-paginate`, `jekyll-coffeescript`,
+  `jekyll-gist`, and the `jekyll-theme-primer` theme — **none of which are
+  in our Gemfile or exercised by local `bundle exec jekyll build`.**
+- **Concretely, this bit us**: `jekyll-optional-front-matter` makes Jekyll
+  render Liquid in `.md` files even with **no front matter at all** —
+  something plain Jekyll doesn't do (a front-matter-less file is normally
+  just copied statically). `PICKUP_AND_GO.md` has no front matter and
+  contains literal `{% include ... %}` text as documentation examples;
+  production tried to parse that as a real Liquid tag and the whole build
+  crashed with `Liquid Exception: Invalid syntax for include tag`, even
+  though the exact same repo state built cleanly with our local Gemfile.
+  **Fix applied**: added `PICKUP_AND_GO.md` to `_config.yml`'s `exclude:`
+  list (`README.md` was already there for the same underlying reason) —
+  this is the permanent fix, since this doc will keep referencing Liquid
+  syntax as examples going forward and re-escaping every mention with
+  `{% raw %}` would be a losing game.
+- **Takeaway**: if a change here builds fine locally but the GitHub Actions
+  "pages build and deployment" workflow fails, check
+  `gh run list --limit 5` and `gh run view <id> --log-failed` first — the
+  failure is very likely coming from a plugin in the *production* gemset
+  that local dev doesn't have, not from anything `bundle exec jekyll build`
+  could have caught. Don't assume a green local build means a green deploy.
+
 To preview locally:
 
 ```bash

@@ -134,6 +134,8 @@ bundle exec jekyll serve
 
 Then open `http://localhost:4000`. GitHub Pages builds and deploys the site automatically on push — no CI config needed.
 
+**Note:** a successful local build doesn't guarantee the live GitHub Pages build will succeed — production uses its own Jekyll/plugin set, which can behave slightly differently (e.g. it renders Liquid in Markdown files that have no front matter, which is why `PICKUP_AND_GO.md` is excluded from Jekyll processing in `_config.yml`, same as this README). If a push doesn't show up on the live site, check the "pages build and deployment" run under the repo's **Actions** tab for the actual error.
+
 ## Credits
 
 Site created by [Je'aime H. Powell](mailto:jeaimehp@gmail.com?subject=%5BPEARC26%20HPC%20Resources%20Site%5D).
