@@ -9,6 +9,7 @@ baseurl: "/hpcresources-pearc26"
 # trying to process anything else in the repo as a page.
 exclude:
   - README.md
+  - PICKUP_AND_GO.md
   - Gemfile
   - Gemfile.lock
   - vendor
