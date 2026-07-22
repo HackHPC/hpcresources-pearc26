@@ -332,8 +332,28 @@ render `<p>` tags).
     string-match the CSV's `Name` column. **If you rename a resource in the
     CSV, you must also update its name everywhere it appears in
     `MAJOR_RESOURCE_MAP`**, or it silently drops out of that major's filter
-    results (no error — it just won't match). Not every resource is mapped
-    to a major; unmapped ones only show up under "All".
+    results (no error — it just won't match).
+    - **A resource can (and often should) be linked to multiple majors** —
+      just list its exact name in more than one major's array.
+      `RESOURCE_MAJORS` (built right below `MAJOR_RESOURCE_MAP`) is a
+      reverse index that already handles this automatically: a name
+      appearing in 2+ major arrays ends up with 2+ entries in its
+      `majors` array, and the major-filter checkbox logic is OR-across-
+      selected-majors, so it just works — this isn't a feature that needed
+      building, it's inherent to how the map is structured. As of
+      2026-07-22 every one of the 122 resources is mapped to at least one
+      major (a full audit filled in ~78 that had been added since the map
+      was first written — mainly the `PEARC EXHIBITOR` vendor batch and
+      the `AI Tools & Resources` batch — neither of which had ever been
+      touched here), and 34 resources are deliberately tagged to 2+ majors
+      where genuinely relevant (e.g. hardware/cloud vendors under both
+      "Cybersecurity, IT, Networking, and Cloud" and "Computer Engineering
+      and Electrical Engineering"; AI dev-tool/API products under both
+      "Data Science, AI, Statistics, and Analytics" and "Computer Science
+      and Software Engineering"). If a resource is added later, check
+      whether it fits more than one major before assuming a single tag —
+      don't force a fit just to pad the count, but a genuine dual/triple
+      fit is normal and encouraged here, not overreach.
   - Both multi-selects share one generic implementation
     (`MULTISELECT_CONFIGS`, `renderMultiSelectPanel`, `setupMultiSelects`)
     — extend that object if a third multi-select filter is ever needed
@@ -348,6 +368,22 @@ render `<p>` tags).
   Speaker cards intentionally have **no** per-card id/deep-link — that
   wasn't part of the original standalone `speakers.html` behavior and
   wasn't requested when it became a tab, so don't add it unprompted.
+- **Tabs are also directly linkable**: a bare `#directory` / `#mentors` /
+  `#speakers` / `#faq` hash activates that tab on load (added 2026-07-22).
+  `handleHashScroll()` checks this generically — `document.getElementById(
+  'tab-' + hash.slice(1))` — against existing tab-panel ids, so a future
+  fifth tab needs **no code change** here as long as its panel id follows
+  the `tab-<data-tab-value>` convention. Clicking a tab button also updates
+  the hash (`history.replaceState`, not `pushState` — consistent with
+  `goToMentor()` elsewhere, deliberately not polluting browser history per
+  click) so the current tab is always copy-shareable from the address bar.
+  This hash-updating lives in the tab button's own click handler
+  (`setupTabs()`), **not** inside `activateTab()` itself — `activateTab()`
+  is also called internally by `goToMentor()` and `handleHashScroll()` for
+  the more specific `#mentor-<slug>` links, and if it rewrote the hash
+  unconditionally on every call, it would clobber those more specific
+  hashes back down to the bare `#mentors`. Keep it that way if you touch
+  this code.
 - **Speakers tab data flow mirrors the Mentors tab**: `loadSpeakers()`
   parses `#speaker-data` into `state.speakers` and renders `#speaker-list`
   via `speakerCard()`, exactly like `loadMentors()`/`renderMentors()` do for

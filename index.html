@@ -668,31 +668,62 @@ layout: null
   // Maps broader student fields of study to the resources most relevant to
   // them, curated from the PEARC26 HPC Resources list. Resource names must
   // match the "Name" column in _data/PEARC26-HPCResourceList-FullList.csv.
+  // A resource can (and often should) appear under more than one major —
+  // RESOURCE_MAJORS below builds a reverse index automatically, so listing
+  // the same name in two arrays here is how multi-major linking works.
   const MAJOR_RESOURCE_MAP = {
     'Computer Science and Software Engineering': [
       'Association for Computing Machinery (ACM)', 'IEEE Computer Society', 'US-RSE (Research Software Engineering Association)',
       'Google Summer of Code (GSoC)', 'Jupyter', 'Apptainer', 'NCSA Learn',
+      'BSSW - Formal Course Resources for Learning About HPC', 'Intro to HPC - SLURM Training (Cambi)',
+      'The Carpentries - Adopting HPC Carpentry', 'SC (Supercomputing Conference)',
+      'HPDC (High-Performance Parallel and Distributed Computing)', 'ISC High Performance', 'WeTeachCS',
+      'TACC Analysis Portal (TAP)', 'CIQ', 'Globus', 'Open OnDemand', 'GitHub Student Developer Pack',
+      'AI Squared Student Program (UNIFI)', 'Cerebras Cloud (Inference API)', 'Exa AI (Neural Search API)',
+      'Free AI Tools GitHub List', 'Google AI Studio (Gemini API)', 'Groq Cloud', 'Hugging Face',
+      'LM Studio', 'Ollama', 'OpenRouter', 'StudentOffers — Free LLM API Proxy', 'xAI Grok API',
     ],
     'Cybersecurity, IT, Networking, and Cloud': [
       'ACCESS Cyberinfrastructure', 'ACCESS Campus Champions', 'Open HPC',
       'NRP (National Research Platform)', 'Cloudbank ACCESS', 'ACCESS Allocations',
+      'PATh/Open Science Pool', 'Cambridge Computer', 'Amazon Web Services (AWS)', 'Google Cloud',
+      'CIQ', 'Internet2', 'SHI Public Sector (with Dell)', 'AuriStor',
+      'National Center for Supercomputing Applications (NCSA)', 'Atempo', 'BeeGFS (ThinkParQ)', 'Globus',
+      'Neuvys Technologies / NetApp', 'NICS / AI Tennessee', 'Omnibond', 'Open OnDemand',
+      'Pacific Northwest National Laboratory (PNNL)', 'PIER Group', 'PSC (Pittsburgh Supercomputing Center)',
+      'Purdue University (RCAC)', 'San Diego Supercomputer Center (SDSC)', 'ConfidentialMind',
     ],
     'Computer Engineering and Electrical Engineering': [
       'IEEE Computer Society', 'IEEE IPDPS (International Parallel and Distributed Processing Symposium)',
       'IEEE Cluster Computing', 'ACCESS Cyberinfrastructure', 'Anvil Supercomputer', 'Open HPC',
+      'TACC Undergraduate & Graduate Education', 'TACC Analysis Portal (TAP)', 'HPE (with AMD)',
+      'Lenovo (with AMD)', 'Dell Technologies', 'Cornelis Networks', 'Mark III Systems', 'Cirrascale',
+      'Microway', 'DataDirect Networks (DDN)',
     ],
     'Data Science, AI, Statistics, and Analytics': [
       'Black in AI', 'Google AI Professional Certificate', 'NAIRR Pilot Portal',
       'Jupyter', 'marimo', 'NRP (National Research Platform)', 'NCAR Internships',
+      'Abundant Frontier Institute (AFI)', 'AI Credits Directory', 'AI Perks Free API Credits Guide (2026)',
+      'AI Squared Student Program (UNIFI)', 'Anthropic', 'Cerebras Cloud (Inference API)',
+      'Exa AI (Neural Search API)', 'Free AI Tools GitHub List', 'Free.ai Education',
+      'GitHub Student Developer Pack', 'Google AI Studio (Gemini API)', 'Google Gemini', 'Groq Cloud',
+      'Hugging Face', 'LM Studio', 'Microsoft Copilot', 'Ollama', 'OpenAI', 'OpenRouter',
+      'Perplexity + Comet (1-Year Bundle)', 'Perplexity AI', 'Perplexity Pro (Education Plan)', 'Qwen',
+      'StudentOffers — AI & ML Directory', 'StudentOffers — Free LLM API Proxy', 'xAI Grok API', 'Z.ai',
+      'ConfidentialMind', 'NICS / AI Tennessee', 'Mark III Systems',
     ],
     'Computational, Mathematical, and Physical Sciences': [
       'DOE CSGF', 'SIAM CSI (Computing in Science and Engineering)',
       'SIAM PP (Parallel Processing for Scientific Computing)',
       'HSF Training - Singularity Container Training', 'NASA SEED', 'ACCESS Workshops',
+      'Open Quantum Initiative (OQI) Undergraduate Fellowship', 'Chicago Quantum Exchange Job Board',
+      'Quantum Education Landscape (RIT)', 'Quantum Learning Resources', 'Qblox',
+      'SULI Program (Science Undergraduate Laboratory Internships)',
     ],
     'Biology, Biomedical, and Health Sciences': [
       'NSF REU Sites', 'NSF REU Search Tool', 'PathwaysToScience.org',
       'ACCESS Cyberinfrastructure', 'Jupyter', 'SGCI / SGX3 (Science Gateways Community Institute)',
+      'SGX3 Fall & Spring Training', 'SULI Program (Science Undergraduate Laboratory Internships)',
     ],
     'Agriculture, Environmental, and Life Sciences': [
       'NCAR Internships', 'NCAR Explorer Series', 'NCAR PI-WRF Teaching Box',
@@ -711,7 +742,9 @@ layout: null
       'ACCESS Campus Champions', 'MS-CC (Minority Serving Institutions Cyberinfrastructure Consortium)',
       'NSBE (National Society of Black Engineers)',
       'SACNAS (Society for Advancement of Chicanos/Hispanics and Native Americans in Science)',
-      'SHPE (Society of Hispanic Professional Engineers)',
+      'SHPE (Society of Hispanic Professional Engineers)', 'Latinas in STEM', 'NSF GRFP',
+      'Benjamin Gilman Scholarship', 'Coalition for Academic Scientific Computation (CASC)',
+      'Sustainable Horizons Institute',
     ],
   };
 
@@ -1669,7 +1702,11 @@ layout: null
 
   function setupTabs() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => activateTab(btn.getAttribute('data-tab')));
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-tab');
+        activateTab(target);
+        history.replaceState(null, '', `#${target}`);
+      });
     });
   }
 
@@ -1714,6 +1751,16 @@ layout: null
   function handleHashScroll() {
     const hash = window.location.hash;
     if (!hash) return;
+
+    // A bare "#<data-tab value>" (e.g. #mentors, #faq) is a direct link to
+    // that tab — matched generically against existing tab-panel ids so a
+    // future fifth tab needs no change here.
+    const bareTabId = hash.slice(1);
+    const tabPanel = document.getElementById(`tab-${bareTabId}`);
+    if (tabPanel && tabPanel.classList.contains('tab-panel')) {
+      activateTab(bareTabId);
+      return;
+    }
 
     if (hash.startsWith('#resource-')) {
       setTimeout(() => {
