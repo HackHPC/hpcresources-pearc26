@@ -10,34 +10,45 @@ changes immediately, without re-deriving the architecture from scratch.
 Student Program**, built by HackHPC. It's a GitHub Pages site: push to
 `main`, GitHub builds and deploys it automatically, no CI config needed.
 
-It has two independent pages, both built the same way:
+There is exactly **one page**, `index.html` — everything lives there as
+three client-side tabs, toggled with no page reload or URL change:
 
-- **`index.html`** — the main app. A searchable/filterable directory of HPC
-  communities, funding, training, conferences, and career resources, plus a
-  "Connected Mentors" tab.
-- **`speakers.html`** — a standalone bio page for the "Groundwork for
-  Greatness" morning speaker series.
+- **Resource Directory** (`#tab-directory`) — searchable/filterable
+  directory of HPC communities, funding, training, conferences, and career
+  resources.
+- **Connected Mentors** (`#tab-mentors`) — mentor roster + signup form.
+- **Groundwork for Greatness** (`#tab-speakers`) — speaker bios for the
+  morning speaker series.
+
+There used to be a second standalone page, `speakers.html`, for the speaker
+bios — it was merged into `index.html` as a third tab (to match how
+Connected Mentors already worked) and deleted. If you find a stray reference
+to `speakers.html` anywhere (a link, a doc, an old bookmark), it's stale —
+point it at `index.html` and let the tab button handle it.
 
 There is no separate frontend build step, no npm, no bundler beyond Ruby's
 Bundler for Jekyll itself. Tailwind is loaded from a CDN (`cdn.tailwindcss.com`)
-and configured inline in each page's `<script>` block.
+and configured inline in the page's `<script>` block.
 
-## How a page actually works
-
-Both `index.html` and `speakers.html` follow the same pattern:
+## How the page actually works
 
 1. Front matter `layout: null` — Jekyll processes Liquid in the file but
    doesn't wrap it in a theme layout. The file *is* the whole page.
 2. Data lives in `_data/*.csv` or `_data/*.yml`. Jekyll parses these at
    **build time** and exposes them as `site.data.<filename-without-extension>`.
-3. Each page embeds that data as JSON in a `<script type="application/json">`
-   tag via `{{ site.data.whatever | jsonify | replace: "</", "<\/" }}` — the
+3. Each dataset is embedded as JSON in its own
+   `<script type="application/json">` tag via
+   `{{ site.data.whatever | jsonify | replace: "</", "<\/" }}` — the
    `replace` guards against a literal `</script>` inside a description
-   breaking out of the tag.
-4. A vanilla-JS IIFE at the bottom of the page reads that JSON with
+   breaking out of the tag. There are three: `#resource-data`,
+   `#mentor-data`, `#speaker-data`.
+4. One vanilla-JS IIFE at the bottom of the page reads each JSON blob with
    `JSON.parse(document.getElementById('...').textContent)` and renders it
-   client-side into card grids. No runtime fetch, no CSV/YAML parsing in the
-   browser — Jekyll already did that at build time.
+   client-side into that tab's markup (card grid, mentor grid, or speaker
+   list). No runtime fetch, no CSV/YAML parsing in the browser — Jekyll
+   already did that at build time. All three tabs' data loads eagerly on
+   `DOMContentLoaded` regardless of which tab is visible — switching tabs
+   only toggles a `hidden` class, it doesn't lazy-load anything.
 
 This means: **to change what data appears, edit the file in `_data/`, not
 the HTML.** The HTML only needs to change if you're changing *how* something
@@ -49,14 +60,14 @@ renders, adding a new data file, or changing page structure/behavior.
 _config.yml                                  Jekyll site config (title, description, exclude list)
 Gemfile / Gemfile.lock                       Ruby deps (Gemfile.lock is gitignored — see "Local dev" below)
 _data/
-  PEARC26-HPCResourceList-FullList.csv       Resource directory data → index.html "Resource Directory" tab
-  mentors.csv                                Connected Mentors roster → index.html "Connected Mentors" tab
-  speakers.yml                               Groundwork for Greatness speaker bios → speakers.html
+  PEARC26-HPCResourceList-FullList.csv       Resource directory data → "Resource Directory" tab
+  mentors.csv                                Connected Mentors roster → "Connected Mentors" tab
+  speakers.yml                               Groundwork for Greatness speaker bios → "Groundwork for Greatness" tab
 assets/
   favicons/                                  SVG-wrapped org favicons for speaker affiliations (see below)
+  favicons/resources/                        SVG-wrapped favicons for resource cards, one per resource (see below)
   speakers/                                  Speaker headshot photos, referenced by speakers.yml `photo`
-index.html                                   Main app: layout + styles + JS, reads resource/mentor JSON
-speakers.html                                Standalone speaker bio page, reads speaker JSON
+index.html                                   The entire site: layout + styles + JS + all three tabs
 README.md                                    Human-facing project README (may lag behind this file — check both)
 ```
 
@@ -115,8 +126,29 @@ render `<p>` tags).
 
 ## Notable behaviors in index.html
 
-- **Two tabs**, toggled client-side (`#tab-directory` / `#tab-mentors`), no
-  page reload.
+- **Resource favicons**: each resource card shows a small icon to the left
+  of its title, at `/assets/favicons/resources/<slugified-title>.svg` —
+  computed client-side in `cardTemplate()` from `slugify(resource.title)`,
+  **not** from a CSV column. If the file doesn't exist (a fetch failed, or
+  the resource has no URL), the `<img>`'s `onerror="this.remove()"` just
+  removes it — no broken-image icon, no CSV change needed either way.
+  These were bulk-fetched from each resource's real `URL` (parse the site's
+  `<link rel="icon">` tags, prefer a real SVG > largest PNG/ICO, fall back
+  to plain `/favicon.ico`, convert non-SVG raster to an SVG wrapper exactly
+  like the speaker-affiliation icons). `rel` can be multi-token
+  (`rel="shortcut icon"`) — match the whole quoted attribute value, not
+  just up to the first space, or you'll silently miss those. A handful of
+  sites (ACM, HPCWire, SHI, PEARC's acm.org subdomain) block simple
+  `curl` with a WAF/bot-challenge and have no icon; that's expected, not a
+  bug to chase. If new resources are added later without a matching icon
+  file, they'll just render without one — fetch and drop a new
+  `<slug>.svg` into that folder if you want one to appear.
+- **Three tabs** (`#tab-directory` / `#tab-mentors` / `#tab-speakers`),
+  toggled client-side by `activateTab()` — no page reload, no URL change.
+  `setupTabs()` wires every `.tab-btn` (matched by its `data-tab` attribute)
+  to `activateTab()`; if you ever add a fourth tab, add its button + panel
+  markup, then add one line to `activateTab()`'s hidden-class toggling — the
+  click wiring itself is already generic.
 - **Filtering is three independent, composable controls**, all client-side
   and all AND'd together (search AND category AND major):
   - **Search box** — matches title/category/description substrings.
@@ -144,7 +176,16 @@ render `<p>` tags).
 - **Deep linking**: every resource card has id `resource-<slugified-title>`
   and every mentor card has id `mentor-<slugified-name>`; a `#resource-...`
   or `#mentor-...` URL hash scrolls to and glow-highlights the target on
-  load, and switches to the mentors tab if needed.
+  load, and switches to the mentors tab if needed (`handleHashScroll()`).
+  Speaker cards intentionally have **no** per-card id/deep-link — that
+  wasn't part of the original standalone `speakers.html` behavior and
+  wasn't requested when it became a tab, so don't add it unprompted.
+- **Speakers tab data flow mirrors the Mentors tab**: `loadSpeakers()`
+  parses `#speaker-data` into `state.speakers` and renders `#speaker-list`
+  via `speakerCard()`, exactly like `loadMentors()`/`renderMentors()` do for
+  `#mentor-grid`. It has no search/filter/sort — if one gets added later,
+  follow the resources tab's `state`/`filteredResources()` pattern rather
+  than inventing a new one.
 - **Share menu** per resource card (copy link / SMS / email / X / LinkedIn /
   Facebook, or the native OS share sheet if available).
 - **"Suggest a Resource" modal** and **"Become a Connected Mentor" form**
@@ -219,10 +260,14 @@ bundle exec jekyll serve     # http://localhost:4000
   mentor/resource rows have been removed before (placeholder mentors with
   fake LinkedIn URLs, duplicate/dead resources) but only on explicit user
   request, not proactively.
-- New standalone pages (like `speakers.html`) follow the same `layout: null`
-  + embedded-JSON-from-`_data`+ vanilla-JS-render pattern as `index.html`
-  rather than introducing a new templating approach, a JS framework, or a
-  build step.
+- **Prefer a new tab in `index.html` over a new standalone page** — this is
+  exactly what happened to `speakers.html` (see top of this file): it
+  started as its own page, and was merged into a third tab once the site
+  had an established tab pattern (Resource Directory / Connected Mentors)
+  to match. If a genuinely standalone page is ever warranted again, follow
+  the same `layout: null` + embedded-JSON-from-`_data` + vanilla-JS-render
+  pattern rather than introducing a new templating approach, a JS
+  framework, or a build step.
 - **Verifying JS-driven UI changes**: this repo has no npm/Puppeteer/
   Selenium. To actually confirm interactive behavior (not just that the
   page loads), launch Chrome headless with remote debugging and drive it
