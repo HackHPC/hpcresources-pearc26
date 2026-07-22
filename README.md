@@ -91,3 +91,7 @@ bundle exec jekyll serve
 ```
 
 Then open `http://localhost:4000`. GitHub Pages builds and deploys the site automatically on push — no CI config needed.
+
+## Credits
+
+Site created by [Je'aime H. Powell](mailto:jeaimehp@gmail.com?subject=%5BPEARC26%20HPC%20Resources%20Site%5D).
